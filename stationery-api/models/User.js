@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const { isEmail } = require("validator");
 
 const { MAX_WISHLIST_ITEMS, MAX_ADDRESS_NUMBER, limitValidator } = require("../utils/validation");
+const ROLES = require("../config/roles-config");
 
 const addressSchema = new mongoose.Schema({
   label: {
@@ -68,8 +69,8 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["user", "admin"],
-      default: "user",
+      enum: Object.values(ROLES),
+      default: ROLES.USER,
     },
     addresses: {
       type: [addressSchema],
