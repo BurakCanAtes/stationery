@@ -12,8 +12,13 @@ function limitValidator(limit, label) {
   }
 }
 
+function hasAllFields(data, fields) {
+  return fields.every((field) => data[field] !== undefined);
+}
+
 module.exports = {
   MAX_WISHLIST_ITEMS,
   MAX_ADDRESS_NUMBER,
   limitValidator,
+  hasAllFields,
 };
