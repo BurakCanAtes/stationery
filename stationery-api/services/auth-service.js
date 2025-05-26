@@ -2,6 +2,7 @@ const argon2 = require("argon2");
 const zxcvbn = require("zxcvbn");
 
 const User = require("../models/User");
+const { createToken } = require("../utils/auth-utils");
 
 const validatePassword = (pwd) => {
   const result = zxcvbn(pwd);
@@ -42,4 +43,24 @@ const createUser = async (userData) => {
   }
 };
 
-module.exports = { createUser };
+const checkUser = async (user, password) => {
+  try {
+    const verified = await argon2.verify(user.password, password);
+
+    if (verified) {
+      const token = createToken({
+        _id: user._id,
+        role: user.role,
+      });
+      return token;
+    } else {
+      // TODO: handle error
+      throw Error("Invalid email or password");
+    }
+  } catch (error) {
+    // TODO: handle error
+    throw error;
+  }
+};
+
+module.exports = { createUser, checkUser };

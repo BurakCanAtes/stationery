@@ -1,5 +1,6 @@
 const { registerFields } = require("../config/requests-config");
-const { createUser } = require("../services/auth-service");
+const User = require("../models/User");
+const { createUser, checkUser } = require("../services/auth-service");
 const { isInvalidBody, createToken } = require("../utils/auth-utils");
 
 const register = async (req, res) => {
@@ -31,4 +32,37 @@ const register = async (req, res) => {
   }
 };
 
-module.exports = { register };
+const login = async (req, res) => {
+  try {
+    if (isInvalidBody(req.body, loginFields)) {
+      // TODO: handle errors globally
+      console.error("Invalid Body");
+      res.status(400).json({ message: "Error" });
+    }
+
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      // TODO: handle error
+      throw Error("Invalid email or password");
+    }
+
+    const token = await checkUser(user, password);
+
+    const userData = user.toObject();
+    delete userData.password;
+
+    res.status(200).json({
+      jwt: {
+        token,
+      },
+      user: userData,
+    });
+  } catch (error) {
+    // TODO: handle errors
+    res.status(500).json({ message: error.message || "Something went wrong!" });
+  }
+};
+
+module.exports = { register, login };
