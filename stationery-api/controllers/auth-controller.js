@@ -1,4 +1,4 @@
-const { registerFields } = require("../config/requests-config");
+const { registerFields, loginFields } = require("../config/requests-config");
 const User = require("../models/User");
 const { createUser, checkUser } = require("../services/auth-service");
 const { isInvalidBody, createToken } = require("../utils/auth-utils");
