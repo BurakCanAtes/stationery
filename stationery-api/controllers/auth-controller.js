@@ -2,6 +2,7 @@ const { registerFields } = require("../config/requests-config");
 const User = require("../models/User");
 const { createUser, checkUser } = require("../services/auth-service");
 const { isInvalidBody, createToken } = require("../utils/auth-utils");
+const { findUserById } = require("../utils/shared-utils");
 
 const register = async (req, res) => {
   try {
@@ -65,4 +66,21 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { register, login };
+const getAuthUser = async (req, res) => {
+  try {
+    const { userId } = req;
+
+    const user = await findUserById(userId);
+
+    res.status(200).json({
+      _id: user._id,
+      email: user.email,
+      role: user.role,
+    });
+  } catch (error) {
+    // TODO: handle errors
+    res.status(500).json({ message: error.message || "Something went wrong!" });
+  }
+};
+
+module.exports = { register, login, getAuthUser };

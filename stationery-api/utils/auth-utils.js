@@ -11,8 +11,23 @@ const createToken = (data) => {
   }
 };
 
+const decodeToken = (token) => {
+  // TODO: handle errors globally
+  try {
+    return jwt.verify(token, JWT_SECRET);
+  } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      throw Error("Token has expired");
+    }
+    if (error.name === "JsonWebTokenError") {
+      throw Error("Invalid token");
+    }
+    throw Error("Failed to decode token");
+  }
+};
+
 const isInvalidBody = (data, fields) => {
   return !data || !hasAllFields(data, fields);
 };
 
-module.exports = { isInvalidBody, createToken };
+module.exports = { isInvalidBody, createToken, decodeToken };
