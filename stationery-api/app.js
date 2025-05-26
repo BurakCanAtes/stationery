@@ -5,6 +5,8 @@ const mongoose = require("mongoose");
 
 const router = express.Router();
 
+const authRoutes = require("./routes/auth-routes");
+
 const app = express();
 
 // middleware
@@ -30,6 +32,6 @@ try {
   console.error(error);
 }
 
-router.get("/", (req, res) => res.send("Hello World!"));
+router.use("/auth", authRoutes);
 
 app.use("/api", router);
