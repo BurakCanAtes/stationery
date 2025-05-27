@@ -1,11 +1,11 @@
 const { decodeToken } = require("../utils/auth-utils");
+const { createError } = require("../utils/errors");
 
 const verifyUser = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    // TODO: handle error
-    res.status(401).json({ message: "Unauthorized access" });
+  if(!authHeader || !authHeader.startsWith("Bearer ")) {
+    return next(createError("Unauthorized access", 401));
   }
 
   const token = authHeader.split(" ")[1];
@@ -14,8 +14,7 @@ const verifyUser = (req, res, next) => {
     req.userId = decoded._id;
     next();
   } catch (error) {
-    // TODO: handle error
-    res.status(500).json({ message: error.message || "Something went wrong!" });
+    return next(error);
   }
 };
 

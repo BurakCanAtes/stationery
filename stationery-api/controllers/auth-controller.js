@@ -2,14 +2,13 @@ const { registerFields, loginFields } = require("../config/requests-config");
 const User = require("../models/User");
 const { createUser, checkUser } = require("../services/auth-service");
 const { isInvalidBody, createToken } = require("../utils/auth-utils");
+const { createError, createValidationError } = require("../utils/errors");
 const { findUserById } = require("../utils/shared-utils");
 
-const register = async (req, res) => {
+const register = async (req, res, next) => {
   try {
     if (isInvalidBody(req.body, registerFields)) {
-      // TODO: handle errors globally
-      console.error("Invalid Body");
-      res.status(400).json({ message: "Error" });
+      throw createError("Request body is invalid or modified", 400);
     }
 
     const { firstName, lastName, email, password } = req.body;
@@ -28,25 +27,22 @@ const register = async (req, res) => {
       user: userData,
     });
   } catch (error) {
-    // TODO: handle errors
-    res.status(500).json({ message: error.message || "Something went wrong!" });
+    const validationError = createValidationError(error);
+    return next(validationError || error);
   }
 };
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   try {
-    if (isInvalidBody(req.body, loginFields)) {
-      // TODO: handle errors globally
-      console.error("Invalid Body");
-      res.status(400).json({ message: "Error" });
+    if(isInvalidBody(req.body, loginFields)) {
+      throw createError("Request body is invalid or modified", 400);
     }
 
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
     if (!user) {
-      // TODO: handle error
-      throw Error("Invalid email or password");
+      throw createError("Invalid email or password", 401);
     }
 
     const token = await checkUser(user, password);
@@ -61,12 +57,11 @@ const login = async (req, res) => {
       user: userData,
     });
   } catch (error) {
-    // TODO: handle errors
-    res.status(500).json({ message: error.message || "Something went wrong!" });
+    return next(error);
   }
 };
 
-const getAuthUser = async (req, res) => {
+const getAuthUser = async (req, res, next) => {
   try {
     const { userId } = req;
 
@@ -78,8 +73,7 @@ const getAuthUser = async (req, res) => {
       role: user.role,
     });
   } catch (error) {
-    // TODO: handle errors
-    res.status(500).json({ message: error.message || "Something went wrong!" });
+    return next(error);
   }
 };
 
