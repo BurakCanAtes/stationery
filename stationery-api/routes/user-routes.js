@@ -7,6 +7,6 @@ const router = Router();
 // TODO: handle user routes
 router.get("", userController.getUser);
 router.patch("", userController.updateUser);
-router.delete("", (req, res) => res.send("Delete User"));
+router.delete("", userController.deleteUser);
 
 module.exports = router;
