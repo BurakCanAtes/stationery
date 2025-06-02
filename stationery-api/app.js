@@ -9,6 +9,7 @@ const authRoutes = require("./routes/auth-routes");
 const userRoutes = require("./routes/user-routes");
 
 const handleErrors = require("./middlewares/errors-middleware");
+const verifyUser = require("./middlewares/auth-middleware");
 
 const app = express();
 
@@ -36,7 +37,7 @@ try {
 }
 
 router.use("/auth", authRoutes);
-router.use("/users/me", userRoutes);
+router.use("/users/me", verifyUser, userRoutes);
 
 app.use("/api", router);
 app.use(handleErrors);
