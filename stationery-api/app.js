@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const router = express.Router();
 
 const authRoutes = require("./routes/auth-routes");
+const categoryRoutes = require("./routes/category-routes");
 
 const handleErrors = require("./middlewares/errors-middleware");
 
@@ -35,6 +36,7 @@ try {
 }
 
 router.use("/auth", authRoutes);
+router.use("/categories", categoryRoutes);
 
 app.use("/api", router);
 app.use(handleErrors);
