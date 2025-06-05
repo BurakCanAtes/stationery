@@ -16,9 +16,29 @@ function hasAllFields(data, fields) {
   return fields.every((field) => data[field] !== undefined);
 }
 
+function filterFields (req, allowedFields) {
+  const set = {};
+  const unset = {};
+
+  for (const key of allowedFields) {
+    const value = req[key];
+
+    if (value !== undefined && value !== null) {
+      set[key] = value;
+    }
+
+    if (value === null) {
+      unset[key] = "";
+    }
+  }
+
+  return { set, unset };
+}
+
 module.exports = {
   MAX_WISHLIST_ITEMS,
   MAX_ADDRESS_NUMBER,
   limitValidator,
   hasAllFields,
+  filterFields
 };
