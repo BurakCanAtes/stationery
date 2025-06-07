@@ -35,7 +35,7 @@ function filterFields (req, allowedFields) {
   }
 
   return { set, unset };
-}
+};
 
 function isUploadEmpty(type, req) {
   return (
