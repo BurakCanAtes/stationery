@@ -1,31 +1,30 @@
 const { SINGLE_TYPE, MULTIPLE_TYPE } = require("../config/multer-config");
+const { multipleUpload, singleUpload } = require("../utils/cloudinary-utils");
 const { createError } = require("../utils/errors");
-const uploadToCloudinary = require("../utils/cloudinary-utils");
+const { isUploadEmpty } = require("../utils/validation");
 
 const uploadImage = async (req, res, next) => {
-  const { type = SINGLE_TYPE } = req.query;
-
   try {
-    if (type === MULTIPLE_TYPE) {
-      if (!req.files || req.files.length === 0) {
-        throw createError("No files uploaded", 400);
-      }
+    const { type = SINGLE_TYPE, productId, folder = "uploads" } = req.query;
+    const { userId } = req;
 
-      const images = req.files; // TODO: handle multiple image upload
-    } else {
-      if (!req.file) {
-        throw createError("No file uploaded", 400);
-      }
-      // TODO: handle single image upload
-      // const result = await uploadToCloudinary(req.file.buffer, "avatars");
-
-      // res.status(200).json({
-      //   url: result.secure_url,
-      //   publicId: result.public_id,
-      // });
+    if (isUploadEmpty(type, req)) {
+      throw createError("No files uploaded", 400);
     }
+    if (type === MULTIPLE_TYPE) {
+      const images = await multipleUpload(req.files, folder, productId);
 
-    res.send("Success!");
+      res.status(200).json({ images });
+    } else {
+      let publicId;
+      if (folder === "avatars") {
+        publicId = userId;
+      }
+      
+      const result = await singleUpload(req.file.buffer, folder, publicId);
+
+      res.status(200).json(result);
+    }
   } catch (error) {
     return next(error);
   }
