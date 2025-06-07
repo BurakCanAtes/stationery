@@ -1,14 +1,29 @@
-const { upload, SINGLE_TYPE, MULTIPLE_TYPE, MULTIPLE_UPLOAD_FIELD, SINGLE_UPLOAD_FIELD, MAX_FILES_ALLOWED } = require("../config/multer-config");
+const { MulterError } = require("multer");
 
-const dynamicUpload = (req, res, next) => {
-  const type = req.query.type || SINGLE_TYPE;
-  const limit = Math.min(parseInt(req.query.limit) || 1, MAX_FILES_ALLOWED);
+const dynamicUpload = require("../utils/multer-utils");
+const { createError } = require("../utils/errors");
+const { MAX_FILES_ALLOWED, MAX_FILE_SIZE } = require("../config/multer-config");
 
-  if (type === MULTIPLE_TYPE) {
-    return upload.array(MULTIPLE_UPLOAD_FIELD, limit)(req, res, next);
-  }
+const multerMiddleware = (req, res, next) => {
+  dynamicUpload(req, res, (err) => {
+    if(err instanceof MulterError) {
+      if (err.code === "LIMIT_UNEXPECTED_FILE") {
+        return next(createError(`Maximum number of files exceeded. Limit is ${MAX_FILES_ALLOWED}.`, 400));
+      }if (err.code === "LIMIT_FILE_SIZE") {
+        return next(
+          createError(`One or more files exceed the ${MAX_FILE_SIZE / 1024 / 1024}MB size limit.`, 400)
+        );
+      }
 
-  return upload.single(SINGLE_UPLOAD_FIELD)(req, res, next);
-};
+      return next(createError("Upload error: " + err.message, 400));
+    }
 
-module.exports = dynamicUpload;
+    if (err) {
+      return next(createError("Unknown upload error: " + err.message, 500));
+    }
+
+    next();
+  })
+}
+
+module.exports = multerMiddleware;
