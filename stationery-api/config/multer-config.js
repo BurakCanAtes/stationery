@@ -9,6 +9,19 @@ const SINGLE_TYPE = "single";
 const MULTIPLE_TYPE = "multiple";
 const SINGLE_UPLOAD_FIELD = "image";
 const MULTIPLE_UPLOAD_FIELD = "images";
+const ALLOWED_MIME_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+];
+
+const fileFilter = (req, file, cb) => {
+  if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new multer.MulterError("INVALID_FILE_TYPE", file.fieldname));
+  }
+};
 
 const upload = multer({
   storage,
@@ -16,6 +29,7 @@ const upload = multer({
     fileSize: MAX_FILE_SIZE,
     files: MAX_FILES_ALLOWED,
   },
+  fileFilter,
 });
 
 module.exports = {
@@ -26,4 +40,5 @@ module.exports = {
   MULTIPLE_UPLOAD_FIELD,
   MAX_FILE_SIZE,
   MAX_FILES_ALLOWED,
+  ALLOWED_MIME_TYPES,
 };
