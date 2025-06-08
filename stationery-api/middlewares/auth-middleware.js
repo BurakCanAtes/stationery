@@ -12,6 +12,7 @@ const verifyUser = (req, res, next) => {
   try {
     const decoded = decodeToken(token);
     req.userId = decoded._id;
+    req.role = decoded.role;
     next();
   } catch (error) {
     return next(error);
