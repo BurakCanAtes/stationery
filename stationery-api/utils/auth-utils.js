@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 
-const { hasAllFields } = require("./validation");
 const { JWT_SECRET, JWT_MAX_AGE } = require("../config/jwt-config");
 const { createError } = require("./errors");
 
@@ -26,8 +25,4 @@ const decodeToken = (token) => {
   }
 };
 
-const isInvalidBody = (data, fields) => {
-  return !data || !hasAllFields(data, fields);
-};
-
-module.exports = { isInvalidBody, createToken, decodeToken };
+module.exports = { createToken, decodeToken };
