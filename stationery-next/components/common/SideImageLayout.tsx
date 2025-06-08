@@ -20,7 +20,7 @@ export default function SideImageLayout({
   return (
     <main className="flex max-w-screen">
       <section className="min-w-[50vw] flex-1 pb-14 lg:py-12 lg:px-10">
-        <div className="mt-5 mx-5 mb-3.5 lg:m-0 overflow-x-hidden">
+        <div className="flex mt-5 mx-5 mb-3.5 lg:m-0 overflow-x-hidden">
           <Link href="/products">
             <Image src="/logo.png" alt="ate logo" width={75} height={75} />
           </Link>
