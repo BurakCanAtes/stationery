@@ -6,8 +6,8 @@ const mongoose = require("mongoose");
 const router = express.Router();
 
 const authRoutes = require("./routes/auth-routes");
-const uploadRoutes = require("./routes/upload-routes");
 const userRoutes = require("./routes/user-routes");
+const uploadRoutes = require("./routes/upload-routes");
 
 const handleErrors = require("./middlewares/errors-middleware");
 const verifyUser = require("./middlewares/auth-middleware");
@@ -38,8 +38,8 @@ try {
 }
 
 router.use("/auth", authRoutes);
-router.use("/upload", verifyUser, uploadRoutes);
 router.use("/users/me", verifyUser, userRoutes);
+router.use("/upload", verifyUser, uploadRoutes);
 
 app.use("/api", router);
 app.use(handleErrors);
