@@ -5,8 +5,8 @@ const isAdminUser = require("../middlewares/permission-middleware");
 
 const router = Router();
 
-router.get("", (req, res) => res.send("Get All Categories"));
-router.get("/:id", (req, res) => res.send("Get One Category"));
+router.get("", categoryController.getAllCategories);
+router.get("/:id", categoryController.getCategoryById);
 router.post("", isAdminUser, categoryController.addNewCategory);
 router.patch("/:id", (req, res) => res.send("Update Category"));
 

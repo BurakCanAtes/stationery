@@ -1,7 +1,32 @@
 const Category = require("../models/Category");
 const { categoryFields } = require("../config/requests-config");
+const { findCategoryById } = require("../utils/category-utils");
 const { isInvalidBody } = require("../utils/auth-utils");
 const { createError, createValidationError } = require("../utils/errors");
+
+const getAllCategories = async (req, res, next) => {
+  try {
+    const categories = await Category.find({}).sort({ name: 1 });
+
+    res.status(200).json({ total: categories.length , data: categories });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const getCategoryById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const category = await findCategoryById(id);
+
+    res.status(200).json(category);
+  } catch (error) {
+    if (error.name === "CastError" || error.name === "BSONTypeError") {
+      return next(createError("Invalid category ID", 400));
+    }
+    return next(error);
+  }
+};
 
 const addNewCategory = async (req, res, next) => {
   try {
@@ -14,7 +39,7 @@ const addNewCategory = async (req, res, next) => {
     const category = new Category({ name });
     await category.save();
 
-    res.status(201).json({ data: category });
+    res.status(201).json(category);
   } catch (error) {
     if (error.code === 11000) {
       return next(createError("Category name already exists", 409));
@@ -24,4 +49,4 @@ const addNewCategory = async (req, res, next) => {
   }
 };
 
-module.exports = { addNewCategory };
+module.exports = { addNewCategory, getAllCategories, getCategoryById };
