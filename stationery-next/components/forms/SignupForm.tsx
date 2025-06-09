@@ -6,46 +6,28 @@ import { z } from "zod";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form } from "@/components/ui/form";
+import ControlledInput from "../controlled/ControlledInput";
+import { SignUpFormValidation } from "@/lib/validation";
+import PasswordInputWithHelper from "../PasswordInputWithHelper";
 
-// TODO: complete validation
-const FormSchema = z.object({
-  firstName: z.string().min(2, {
-    message: "First name must be at least 2 characters.",
-  }),
-  lastName: z.string().min(2, {
-    message: "Last name must be at least 2 characters.",
-  }),
-  email: z.string().min(1, "Email is required").email("Invalid email address"),
-  password: z
-    .string()
-    .min(1, "Password is required")
-    .min(8, "Password must be at least 8 characters"),
-  confirmPassword: z.string().min(1, "Please confirm your password"),
-});
+const defaultValues = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+};
 
 export function SignupForm() {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    },
+  const form = useForm<z.infer<typeof SignUpFormValidation>>({
+    resolver: zodResolver(SignUpFormValidation),
+    defaultValues,
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    // TODO: perform signup
+  function onSubmit(data: z.infer<typeof SignUpFormValidation>) {
+    // TODO: implement signup logic
+    console.log(data);
   }
 
   return (
@@ -55,70 +37,43 @@ export function SignupForm() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full sm:w-2/3 space-y-3 md:space-y-4"
         >
-          <FormField
+          <ControlledInput<z.infer<typeof SignUpFormValidation>>
             control={form.control}
             name="firstName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>First Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="shadcn" type="text" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="First Name"
+            type="text"
+            placeholder="John"
+            required={true}
           />
-          <FormField
+          <ControlledInput<z.infer<typeof SignUpFormValidation>>
             control={form.control}
             name="lastName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Last Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="shadcn" type="text" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Last Name"
+            type="text"
+            placeholder="Doe"
+            required={true}
           />
-          <FormField
+          <ControlledInput<z.infer<typeof SignUpFormValidation>>
             control={form.control}
             name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input placeholder="shadcn" type="email" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Email"
+            type="email"
+            placeholder="example@example.com"
+            required={true}
           />
-          <FormField
+          <PasswordInputWithHelper<z.infer<typeof SignUpFormValidation>>
             control={form.control}
             name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input placeholder="shadcn" type="password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            placeholder="**********"
+            required={true}
           />
-          <FormField
+          <ControlledInput<z.infer<typeof SignUpFormValidation>>
             control={form.control}
             name="confirmPassword"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
-                <FormControl>
-                  <Input placeholder="shadcn" type="password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Confirm Password"
+            type="password"
+            placeholder="**********"
+            required={true}
           />
           <Button type="submit">Sign Up</Button>
         </form>
