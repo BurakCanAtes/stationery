@@ -1,9 +1,10 @@
 const { registerFields, loginFields } = require("../config/requests-config");
 const User = require("../models/User");
 const { createUser, checkUser } = require("../services/auth-service");
-const { isInvalidBody, createToken } = require("../utils/auth-utils");
+const { createToken } = require("../utils/auth-utils");
 const { createError, createValidationError } = require("../utils/errors");
 const { findUserById } = require("../utils/shared-utils");
+const { isInvalidBody } = require("../utils/validation");
 
 const register = async (req, res, next) => {
   try {
