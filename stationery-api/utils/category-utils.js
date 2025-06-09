@@ -1,4 +1,5 @@
-const Category = require("../models/Category")
+const Category = require("../models/Category");
+const { createError } = require("./errors");
 
 const findCategoryById = async (categoryId) => {
   const category = await Category.findById(categoryId);
@@ -8,4 +9,11 @@ const findCategoryById = async (categoryId) => {
   return category;
 }
 
-module.exports = { findCategoryById };
+const throwDuplicateCategory = async (name, id) => {
+  const existingCategory = await Category.findOne({ name: name.trim().toLowerCase() });
+  if (existingCategory && existingCategory._id.toString() !== id) {
+    throw createError("Category name already exists", 409);
+  }
+}
+
+module.exports = { findCategoryById, throwDuplicateCategory };

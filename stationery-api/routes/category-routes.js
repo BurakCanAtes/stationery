@@ -8,7 +8,7 @@ const router = Router();
 router.get("", categoryController.getAllCategories);
 router.get("/:id", categoryController.getCategoryById);
 router.post("", isAdminUser, categoryController.addNewCategory);
-router.patch("/:id", (req, res) => res.send("Update Category"));
+router.patch("/:id", isAdminUser, categoryController.updateCategoryById);
 
 // TODO: optional => delete category
 

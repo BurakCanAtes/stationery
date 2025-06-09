@@ -1,5 +1,6 @@
 const Category = require("../models/Category");
 const { categoryFields } = require("../config/requests-config");
+const { updateCategory } = require("../services/category-service");
 const { findCategoryById } = require("../utils/category-utils");
 const { isInvalidBody } = require("../utils/auth-utils");
 const { createError, createValidationError } = require("../utils/errors");
@@ -49,4 +50,30 @@ const addNewCategory = async (req, res, next) => {
   }
 };
 
-module.exports = { addNewCategory, getAllCategories, getCategoryById };
+const updateCategoryById = async (req, res, next) => {
+  try {
+    if (isInvalidBody(req.body, categoryFields)) {
+      throw createError("Request body is invalid or modified", 400);
+    }
+
+    const { id } = req.params;
+    const { name } = req.body;
+
+    const category = await updateCategory(id, name);
+
+    res.status(200).json(category);
+  } catch (error) {
+    if (error.code === 11000) {
+      return next(createError("Category name already exists", 409));
+    }
+    const validationError = createValidationError(error);
+    return next(validationError || error);
+  }
+};
+
+module.exports = {
+  addNewCategory,
+  getAllCategories,
+  getCategoryById,
+  updateCategoryById,
+};
