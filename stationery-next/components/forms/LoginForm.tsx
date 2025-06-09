@@ -5,37 +5,24 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Button } from "../ui/button";
+import { Form } from "@/components/ui/form";
+import ControlledInput from "../controlled/ControlledInput";
+import { LogInFormValidation } from "@/lib/validation";
 
-// TODO: complete validation
-const FormSchema = z.object({
-  email: z.string().min(1, "Email is required").email("Invalid email address"),
-  password: z
-    .string()
-    .min(1, "Password is required")
-    .min(8, "Password must be at least 8 characters"),
-});
+const defaultValues = {
+  email: "",
+  password: "",
+};
 
 export function LoginForm() {
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
+  const form = useForm<z.infer<typeof LogInFormValidation>>({
+    resolver: zodResolver(LogInFormValidation),
+    defaultValues,
   });
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    // TODO: perform login
+  function onSubmit(data: z.infer<typeof LogInFormValidation>) {
+    console.log(data);
   }
 
   return (
@@ -45,31 +32,21 @@ export function LoginForm() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full space-y-3 md:space-y-4"
         >
-          <FormField
+          <ControlledInput<z.infer<typeof LogInFormValidation>>
             control={form.control}
             name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input placeholder="shadcn" type="email" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Email"
+            type="email"
+            placeholder="example@example.com"
+            required={true}
           />
-          <FormField
+          <ControlledInput<z.infer<typeof LogInFormValidation>>
             control={form.control}
             name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input placeholder="shadcn" type="password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Password"
+            type="password"
+            placeholder="**********"
+            required={true}
           />
           <Button type="submit">Login</Button>
         </form>
