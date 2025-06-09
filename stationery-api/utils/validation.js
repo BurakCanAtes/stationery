@@ -18,6 +18,10 @@ function hasAllFields(data, fields) {
   return fields.every((field) => data[field] !== undefined);
 }
 
+const isInvalidBody = (data, fields) => {
+  return !data || !hasAllFields(data, fields);
+};
+
 function filterFields (req, allowedFields) {
   const set = {};
   const unset = {};
@@ -51,4 +55,5 @@ module.exports = {
   hasAllFields,
   filterFields,
   isUploadEmpty,
+  isInvalidBody
 };
