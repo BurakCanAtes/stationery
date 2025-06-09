@@ -58,4 +58,42 @@ const multipleUpload = async (files, folder, productId) => {
   return results;
 };
 
-module.exports = { singleUpload, multipleUpload };
+const deleteFromCloudinary = async (publicId) => {
+  return cloudinary.uploader.destroy(publicId);
+};
+
+const isHostedInMyCloudinary = (url) => {
+  return typeof url === "string" &&
+    url.includes(`res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}`);
+};
+
+
+const extractPublicId = (url) => {
+  // Example url: https://res.cloudinary.com/dgxfc0jdc/image/upload/v1747828270/avatars/680cb5755370e720a66a91f6.jpg
+  if (!url) return null;
+
+  // Remove base URL
+  const parts = url.split("/");
+
+  // Find index of "upload"
+  const uploadIndex = parts.findIndex((p) => p === "upload");
+  if (uploadIndex === -1 || uploadIndex + 1 >= parts.length) return null;
+
+  // Slice from after "upload" to end, join with /
+  const publicIdWithExt = parts.slice(uploadIndex + 2).join("/");
+
+  // Remove file extension
+  const lastDotIndex = publicIdWithExt.lastIndexOf(".");
+  return lastDotIndex !== -1
+    ? publicIdWithExt.substring(0, lastDotIndex)
+    : publicIdWithExt;
+};
+
+
+module.exports = {
+  singleUpload,
+  multipleUpload,
+  deleteFromCloudinary,
+  isHostedInMyCloudinary,
+  extractPublicId,
+};
