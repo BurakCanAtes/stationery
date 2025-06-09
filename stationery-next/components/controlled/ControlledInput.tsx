@@ -10,6 +10,7 @@ interface IControlledInputProps<T extends FieldValues>
   name: Path<T>;
   label: string;
   type: HTMLInputTypeAttribute;
+  required?: boolean;
 }
 
 const ControlledInput = <T extends FieldValues>({
@@ -17,6 +18,7 @@ const ControlledInput = <T extends FieldValues>({
   name,
   label,
   type,
+  required = false,
   ...inputProps
 }: IControlledInputProps<T>) => {
   return (
@@ -25,9 +27,11 @@ const ControlledInput = <T extends FieldValues>({
       name={name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>{label}</FormLabel>
+          <FormLabel className="tracking-wide">
+            {label}{required && "*"}
+          </FormLabel>
           <FormControl>
-            <Input {...field} {...inputProps} type={type} />
+          <Input required={required} {...field} {...inputProps} type={type} />
           </FormControl>
           <FormMessage />
         </FormItem>

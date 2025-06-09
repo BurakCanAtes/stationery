@@ -22,6 +22,7 @@ export function LoginForm() {
   });
 
   function onSubmit(data: z.infer<typeof LogInFormValidation>) {
+    // TODO: implement login logic
     console.log(data);
   }
 
