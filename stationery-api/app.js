@@ -9,6 +9,7 @@ const authRoutes = require("./routes/auth-routes");
 const userRoutes = require("./routes/user-routes");
 const userAddressRoutes = require("./routes/user-address-routes");
 const uploadRoutes = require("./routes/upload-routes");
+const categoryRoutes = require("./routes/category-routes");
 
 const handleErrors = require("./middlewares/errors-middleware");
 const verifyUser = require("./middlewares/auth-middleware");
@@ -42,6 +43,7 @@ router.use("/auth", authRoutes);
 router.use("/users/me", verifyUser, userRoutes);
 router.use("/users/addresses", verifyUser, userAddressRoutes);
 router.use("/upload", verifyUser, uploadRoutes);
+router.use("/categories", categoryRoutes);
 
 app.use("/api", router);
 app.use(handleErrors);
