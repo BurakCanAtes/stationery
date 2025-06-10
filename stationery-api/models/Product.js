@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 const { productImageValidator } = require("../utils/validation");
 const { MIN_PRODUCT_PRICE, MAX_PRODUCT_PRICE, MIN_NUMBER_IN_STOCK, MAX_NUMBER_IN_STOCK } = require("../config/product-config");
 
