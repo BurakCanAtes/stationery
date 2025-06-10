@@ -3,6 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 import { Button } from "../ui/button";
@@ -16,14 +18,31 @@ const defaultValues = {
 };
 
 export function LoginForm() {
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof LogInFormValidation>>({
     resolver: zodResolver(LogInFormValidation),
     defaultValues,
   });
 
-  function onSubmit(data: z.infer<typeof LogInFormValidation>) {
-    // TODO: implement login logic
-    console.log(data);
+  async function onSubmit(data: z.infer<typeof LogInFormValidation>) {
+    try {
+      const res = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
+
+      // TODO: add notifications
+      if (res?.ok) {
+        console.log("Login Success!");
+        router.push("/");
+      } else {
+        console.log(res?.error || "Something went wrong");
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
   }
 
   return (
@@ -40,6 +59,7 @@ export function LoginForm() {
             type="email"
             placeholder="example@example.com"
             required={true}
+            autoComplete="email"
           />
           <ControlledInput<z.infer<typeof LogInFormValidation>>
             control={form.control}
@@ -48,6 +68,7 @@ export function LoginForm() {
             type="password"
             placeholder="**********"
             required={true}
+            autoComplete="current-password"
           />
           <Button type="submit">Login</Button>
         </form>
