@@ -6,6 +6,12 @@ const MAX_NUMBER_IN_STOCK = 5000;
 const MIN_BOOK_PAGES = 1;
 const MAX_BOOK_PAGES = 20000;
 
+const PRODUCT_TYPES = {
+  STATIONERY: "Stationery",
+  BOOK: "Book",
+  TOY: "Toy",
+};
+
 module.exports = {
   MIN_PRODUCT_PRICE,
   MAX_PRODUCT_PRICE,
@@ -13,4 +19,5 @@ module.exports = {
   MAX_NUMBER_IN_STOCK,
   MIN_BOOK_PAGES,
   MAX_BOOK_PAGES,
+  PRODUCT_TYPES
 };

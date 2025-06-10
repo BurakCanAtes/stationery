@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+const Product = require("./product");
+
 const stationerySchema = new mongoose.Schema({
   color: {
     type: String,
@@ -12,6 +14,6 @@ const stationerySchema = new mongoose.Schema({
   },
 });
 
-const Stationery = mongoose.model("Stationery", stationerySchema);
+const Stationery = Product.discriminator("Stationery", stationerySchema);
 
 module.exports = Stationery;

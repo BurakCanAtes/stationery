@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const { productImageValidator } = require("../utils/validation");
-const { MIN_PRODUCT_PRICE, MAX_PRODUCT_PRICE, MIN_NUMBER_IN_STOCK, MAX_NUMBER_IN_STOCK } = require("../config/product-config");
+const { MIN_PRODUCT_PRICE, MAX_PRODUCT_PRICE, MIN_NUMBER_IN_STOCK, MAX_NUMBER_IN_STOCK, PRODUCT_TYPES } = require("../config/product-config");
 
 const productSchema = new mongoose.Schema(
   {
@@ -33,8 +33,13 @@ const productSchema = new mongoose.Schema(
       min: [MIN_NUMBER_IN_STOCK, "Stock cannot be negative"],
       max: [MAX_NUMBER_IN_STOCK, "Stock cannot exceed 5000"],
     },
+  productType: {
+      type: String,
+      required: true,
+      enum: Object.values(PRODUCT_TYPES), // Discriminator Key
+    },
   },
-  { timestamps: true }
+  { timestamps: true, discriminatorKey: "productType" }
 );
 
 const Product = mongoose.model("Product", productSchema);

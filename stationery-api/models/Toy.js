@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+const Product = require("./product");
+
 const toySchema = new mongoose.Schema({
   ageRange: {
     type: String,
@@ -13,6 +15,6 @@ const toySchema = new mongoose.Schema({
   },
 });
 
-const Toy = mongoose.model("Toy", toySchema);
+const Toy = Product.discriminator("Toy", toySchema);
 
 module.exports = Toy;

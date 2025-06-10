@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const { MIN_BOOK_PAGES, MAX_BOOK_PAGES } = require("../config/product-config");
+const Product = require("./product");
 
 const bookSchema = new mongoose.Schema({
   author: {
@@ -21,6 +22,6 @@ const bookSchema = new mongoose.Schema({
   },
 });
 
-const Book = mongoose.model("Book", bookSchema);
+const Book = Product.discriminator("Book", bookSchema);
 
 module.exports = Book;
