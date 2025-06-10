@@ -2,7 +2,7 @@ import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { AxiosResponse } from "axios";
 
-import { ILoginResponse } from "@/lib/types/responses/user.type";
+import { IAuthResponse } from "@/lib/types/responses/user.type";
 import axiosInstance from "@/lib/tools/axios";
 
 export const authOptions: AuthOptions = {
@@ -20,7 +20,7 @@ export const authOptions: AuthOptions = {
       },
       async authorize(credentials, req) {
         try {
-          const { data }: AxiosResponse<ILoginResponse> =
+          const { data }: AxiosResponse<IAuthResponse> =
             await axiosInstance.post(
               "/auth/local",
               {

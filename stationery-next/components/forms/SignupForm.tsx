@@ -3,13 +3,20 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useMutation, UseMutationResult } from "@tanstack/react-query";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import ControlledInput from "../controlled/ControlledInput";
 import { SignUpFormValidation } from "@/lib/validation";
 import PasswordInputWithHelper from "../PasswordInputWithHelper";
+import { ISignUpRequest } from "@/lib/types/requests/user.type";
+import { IAuthResponse } from "@/lib/types/responses/user.type";
+import { IReactQueryError } from "@/lib/types/responses/error.type";
+import { signUp } from "@/lib/tools/api";
 
 const defaultValues = {
   firstName: "",
@@ -20,14 +27,46 @@ const defaultValues = {
 };
 
 export function SignupForm() {
+  const router = useRouter();
+
+  const mutation: UseMutationResult<
+    IAuthResponse,
+    IReactQueryError,
+    ISignUpRequest
+  > = useMutation({
+    mutationFn: signUp,
+  });
+
   const form = useForm<z.infer<typeof SignUpFormValidation>>({
     resolver: zodResolver(SignUpFormValidation),
     defaultValues,
   });
 
-  function onSubmit(data: z.infer<typeof SignUpFormValidation>) {
-    // TODO: implement signup logic
-    console.log(data);
+  async function onSubmit(data: z.infer<typeof SignUpFormValidation>) {
+    try {
+      await mutation.mutateAsync({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        password: data.password,
+      });
+
+      const res = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
+
+      // TODO: add notifications
+      if (res?.ok) {
+        console.log("Sign Up Success!");
+        router.push("/");
+      } else {
+        console.log(res?.error || "Something went wrong");
+      }
+    } catch (error) {
+      console.error("Sign-up failed:", error);
+    }
   }
 
   return (

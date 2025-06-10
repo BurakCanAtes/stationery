@@ -18,7 +18,7 @@ export interface User {
   __v: number;
 }
 
-export interface ILoginResponse {
+export interface IAuthResponse {
   jwt?: {
     token: string;
   };
