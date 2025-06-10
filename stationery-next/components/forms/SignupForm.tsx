@@ -99,12 +99,14 @@ export function SignupForm() {
             type="email"
             placeholder="example@example.com"
             required={true}
+            autoComplete="email"
           />
           <PasswordInputWithHelper<z.infer<typeof SignUpFormValidation>>
             control={form.control}
             name="password"
             placeholder="**********"
             required={true}
+            autoComplete="new-password"
           />
           <ControlledInput<z.infer<typeof SignUpFormValidation>>
             control={form.control}
@@ -113,6 +115,7 @@ export function SignupForm() {
             type="password"
             placeholder="**********"
             required={true}
+            autoComplete="new-password"
           />
           <Button type="submit">Sign Up</Button>
         </form>

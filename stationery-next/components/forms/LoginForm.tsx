@@ -59,6 +59,7 @@ export function LoginForm() {
             type="email"
             placeholder="example@example.com"
             required={true}
+            autoComplete="email"
           />
           <ControlledInput<z.infer<typeof LogInFormValidation>>
             control={form.control}
@@ -67,6 +68,7 @@ export function LoginForm() {
             type="password"
             placeholder="**********"
             required={true}
+            autoComplete="current-password"
           />
           <Button type="submit">Login</Button>
         </form>
