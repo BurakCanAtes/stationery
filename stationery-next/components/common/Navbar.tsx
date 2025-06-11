@@ -13,21 +13,182 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
+import Link from "next/link";
+import { getServerSession, Session } from "next-auth";
+import { ChevronDown } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { getCategories } from "@/lib/tools/api";
+import { capitalizeFirstLetter } from "@/lib/utils/helperFunctions";
+import { authOptions } from "@/app/api/auth/[...next-auth]/authOptions";
+import { CategoryNav, INavConfig } from "@/lib/types/navbar.type";
 
-const navigation = [
-  { name: "Dashboard", href: "#", current: true },
-  { name: "Team", href: "#", current: false },
-  { name: "Projects", href: "#", current: false },
-  { name: "Calendar", href: "#", current: false },
-];
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(" ");
+const NavListDesktop = ({ navigation }: { navigation: INavConfig[] }) => {
+  return (
+    <div className="hidden sm:ml-6 sm:flex items-center">
+      <div className="flex space-x-4">
+        {navigation.map((item) =>
+          item?.dropdown ? (
+            <Menu as="div" key={item.name} className="relative">
+              <MenuButton className="inline-flex items-center rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
+                {item.name}
+                <ChevronDown className="ml-1 h-4 w-4" />
+              </MenuButton>
+              <MenuItems className="absolute z-10 mt-2 w-40 rounded-md bg-popover shadow-lg ring-1 ring-border focus:outline-none">
+                {item.items?.map((subItem) => (
+                  <MenuItem key={subItem.name}>
+                    <Link
+                      href={subItem.href}
+                      className={"block px-4 py-2 text-sm text-popover-foreground"}
+                    >
+                      {subItem.name}
+                    </Link>
+                  </MenuItem>
+                ))}
+              </MenuItems>
+            </Menu>
+          ) : (
+            <Link
+              key={item.name}
+              href={item.href || "/products"}
+              className={"text-muted-foreground hover:bg-muted hover:text-foreground rounded-md px-3 py-2 text-sm font-medium"}
+            >
+              {item.name}
+            </Link>
+          )
+        )}
+      </div>
+    </div>
+  );
 }
 
-export default function Navbar() {
+const NavListMobile = ({ navigation }: { navigation: INavConfig[] }) => {
+  return (
+    <DisclosurePanel className="sm:hidden">
+      <div className="space-y-1 px-2 pt-2 pb-3">
+        {navigation.map((item) =>
+          item.dropdown ? (
+            <Disclosure key={item.name} as="div" className="space-y-1">
+              <>
+                <DisclosureButton className="flex w-full items-center rounded-md px-3 py-2 text-left text-base font-medium text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
+                  <span>{item.name}</span>
+                  <ChevronDown className="ml-1 h-4 w-4" />
+                </DisclosureButton>
+                <DisclosurePanel className="space-y-1 pl-5">
+                  {item.items?.map((subItem) => (
+                    <Link
+                      key={subItem.name}
+                      href={subItem.href}
+                      className="block rounded-md px-3 py-2 text-base font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                    >
+                      {subItem.name}
+                    </Link>
+                  ))}
+                </DisclosurePanel>
+              </>
+            </Disclosure>
+          ) : (
+            <DisclosureButton
+              key={item.name}
+              className="block rounded-md px-3 py-2 text-base font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+            >
+              <Link href={item.href || "/products"}>{item.name}</Link>
+            </DisclosureButton>
+          )
+        )}
+      </div>
+    </DisclosurePanel>
+  );
+};
+
+const AuthMenu = ({ session }: { session: Session | null }) => {
+  const user = session?.user;
+
+  return (
+    <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+      {user ? (
+        <>
+          <Link
+            href={"/cart"}
+            className="relative rounded-full bg-background p-1 text-muted-foreground hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
+          >
+            <span className="sr-only">View cart</span>
+            <ShoppingCartIcon aria-hidden="true" className="size-6" />
+          </Link>
+
+          {/* Profile dropdown */}
+          <Menu as="div" className="relative ml-3">
+            <div>
+              <MenuButton className="relative flex rounded-full text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background">
+                {/* TODO: update avatar */}
+                <Avatar>
+                  <AvatarImage src="https://github.com/shadcn.png" />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+              </MenuButton>
+            </div>
+            <MenuItems
+              transition
+              className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-popover py-1 shadow-lg ring-1 ring-border focus:outline-none transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+            >
+              <MenuItem>
+                <Link
+                  href="/user/profile"
+                  className={
+                    "block px-4 py-2 text-sm text-popover-foreground data-focus:outline-hidden"
+                  }
+                >
+                  Your Profile
+                </Link>
+              </MenuItem>
+              <MenuItem>
+                <div
+                  className={"block px-4 py-2 text-sm text-popover-foreground data-focus:outline-hidden cursor-pointer"}
+                >
+                  Sign out
+                </div>
+              </MenuItem>
+            </MenuItems>
+          </Menu>
+        </>
+      ) : (
+        <div>
+          <Link
+            href="/auth/login"
+            className={
+              "text-muted-foreground hover:bg-muted hover:text-foreground rounded-md px-3 py-2 text-sm font-medium"
+            }
+          >
+            Login
+          </Link>
+          <Link
+            href="/auth/signup"
+            className={
+              "text-muted-foreground hover:bg-muted hover:text-foreground rounded-md px-3 py-2 text-sm font-medium"
+            }
+          >
+            Sign Up
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default async function Navbar() {
+  const session = await getServerSession(authOptions);
+  const categories = await getCategories();
+
+  const categoryNav: CategoryNav[] = categories.data.map((category) => ({
+    name: capitalizeFirstLetter(category.name),
+    href: `/products?category=${category._id}`,
+  }));
+
+  const navigation: INavConfig[] = [
+    { name: "Products", href: "/products" },
+    { name: "Categories", dropdown: true, items: categoryNav },
+  ];
+
   return (
     <Disclosure as="nav" className="bg-background text-foreground shadow-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -57,115 +218,15 @@ export default function Navbar() {
                 className="h-14 w-auto"
               />
             </div>
-            <div className="hidden sm:ml-6 sm:flex items-center">
-              <div className="flex space-x-4">
-                {navigation.map((item) => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    aria-current={item.current ? "page" : undefined}
-                    className={classNames(
-                      item.current
-                        ? "bg-muted text-foreground"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                      "rounded-md px-3 py-2 text-sm font-medium"
-                    )}
-                  >
-                    {item.name}
-                  </a>
-                ))}
-              </div>
-            </div>
+            <NavListDesktop navigation={navigation} />
           </div>
 
-          <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-            <button
-              type="button"
-              className="relative rounded-full bg-background p-1 text-muted-foreground hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
-            >
-              <span className="sr-only">View cart</span>
-              <ShoppingCartIcon aria-hidden="true" className="size-6" />
-            </button>
-
-            {/* Profile dropdown */}
-            <Menu as="div" className="relative ml-3">
-              <div>
-                <MenuButton className="relative flex rounded-full text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background">
-                  {/* TODO: update avatar */}
-                  <Avatar>
-                    <AvatarImage src="https://github.com/shadcn.png" />
-                    <AvatarFallback>CN</AvatarFallback>
-                  </Avatar>
-                  {/* <span className="absolute -inset-1.5" />
-                  <span className="sr-only">Open user menu</span>
-                  <img
-                    alt=""
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    className="size-8 rounded-full"
-                  /> */}
-                </MenuButton>
-              </div>
-              <MenuItems
-                transition
-                className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-popover py-1 shadow-lg ring-1 ring-border focus:outline-none transition focus:outline-hidden data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
-              >
-                <MenuItem>
-                  <a
-                    href="#"
-                    className={
-                      "block px-4 py-2 text-sm text-popover-foreground data-focus:outline-hidden"
-                    }
-                  >
-                    Your Profile
-                  </a>
-                </MenuItem>
-                <MenuItem>
-                  <a
-                    href="#"
-                    className={
-                      "block px-4 py-2 text-sm text-popover-foreground data-focus:outline-hidden"
-                    }
-                  >
-                    Settings
-                  </a>
-                </MenuItem>
-                <MenuItem>
-                  <a
-                    href="#"
-                    className={
-                      "block px-4 py-2 text-sm text-popover-foreground data-focus:outline-hidden"
-                    }
-                  >
-                    Sign out
-                  </a>
-                </MenuItem>
-              </MenuItems>
-            </Menu>
-          </div>
+          <AuthMenu session={session} />
         </div>
       </div>
 
       {/* Mobile panel */}
-      <DisclosurePanel className="sm:hidden">
-        <div className="space-y-1 px-2 pt-2 pb-3">
-          {navigation.map((item) => (
-            <DisclosureButton
-              key={item.name}
-              as="a"
-              href={item.href}
-              aria-current={item.current ? "page" : undefined}
-              className={classNames(
-                item.current
-                  ? "bg-muted text-foreground"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                "block rounded-md px-3 py-2 text-base font-medium"
-              )}
-            >
-              {item.name}
-            </DisclosureButton>
-          ))}
-        </div>
-      </DisclosurePanel>
+      <NavListMobile navigation={navigation} />
     </Disclosure>
   );
 }
