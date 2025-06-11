@@ -13,25 +13,31 @@ const addressSchema = new mongoose.Schema({
   fullName: {
     type: String,
     required: [true, "Name is required"],
+    trim: true,
   },
   phone: {
-    type: String
+    type: String,
+    trim: true,
   },
   street: {
     type: String,
     required: [true, "Street name is required"],
+    trim: true,
   },
   city: {
     type: String,
     required: [true, "City name is required"],
+    trim: true,
   },
   postalCode: {
     type: String,
     required: [true, "Postal code is required"],
+    trim: true,
   },
   country: {
     type: String,
     required: [true, "Country name is required"],
+    trim: true,
   },
   isDefault: {
     type: Boolean,
@@ -46,12 +52,14 @@ const userSchema = new mongoose.Schema(
       required: [true, "First name is required"],
       minlength: [2, "First name must be at least 2 characters"],
       maxlength: [30, "First name must be at most 30 characters"],
+      trim: true,
     },
     lastName: {
       type: String,
       required: [true, "Last name is required"],
       minlength: [2, "Last name must be at least 2 characters"],
       maxlength: [30, "Last name must be at most 30 characters"],
+      trim: true,
     },
     email: {
       type: String,
@@ -59,6 +67,7 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
       validate: [isEmail, "Invalid email address"],
+      trim: true,
     },
     password: {
       type: String,
@@ -66,6 +75,7 @@ const userSchema = new mongoose.Schema(
     },
     avatar: {
       type: String,
+      trim: true,
     },
     role: {
       type: String,

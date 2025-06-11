@@ -10,7 +10,7 @@ const router = Router();
 router.get("", productController.getProducts);
 router.get("/:id", productController.getProductById);
 router.post("", isAdminUser, productController.addNewProduct);
-router.put("/:id", (req, res) => res.send("Update Product"));
+router.put("/:id", isAdminUser, productController.updateProduct);
 router.delete("/:id", (req, res) => res.send("Delete Product"));
 
 module.exports = router;

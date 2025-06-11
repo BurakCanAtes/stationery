@@ -1,11 +1,12 @@
 const Product = require("../models/Product");
 const { productFields } = require("../config/requests-config");
 const { DEFAULT_PAGE, PAGE_SIZE, MAX_PAGE_SIZE } = require("../config/product-config");
-const { createProductBaseOnCategory } = require("../services/product-service");
+const { createProductBaseOnCategory, updateExistingProduct } = require("../services/product-service");
 const { createError, createValidationError } = require("../utils/errors");
 const { filterFields } = require("../utils/validation");
 const { findCategoryById } = require("../utils/category-utils");
 const { buildFilterQuery, buildSortQuery, findProductById } = require("../utils/product-utils");
+const { isValidMongooseId } = require("../utils/shared-utils");
 
 const addNewProduct = async (req, res, next) => {
   try {
@@ -80,4 +81,19 @@ const getProductById = async (req, res, next) => {
   }
 };
 
-module.exports = { addNewProduct, getProducts, getProductById };
+const updateProduct = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!isValidMongooseId(id)) {
+      throw createError("Invalid product ID", 400);
+    }
+
+    const updatedProduct = await updateExistingProduct(id, req.body);
+    res.status(200).json(updatedProduct);
+  } catch (error) {
+    const validationError = createValidationError(error);
+    return next(validationError || error);
+  }
+};
+
+module.exports = { addNewProduct, getProducts, getProductById, updateProduct };

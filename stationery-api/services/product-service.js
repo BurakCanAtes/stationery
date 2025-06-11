@@ -1,8 +1,14 @@
 const Book = require("../models/Book");
 const Stationery = require("../models/Stationery");
 const Toy = require("../models/Toy");
+const Product = require("../models/Product");
 const { PRODUCT_TYPES } = require("../config/product-config");
 const { createError } = require("../utils/errors");
+const { isValidMongooseId, applyPatch } = require("../utils/shared-utils");
+const { findCategoryById } = require("../utils/category-utils");
+const { findProductById } = require("../utils/product-utils");
+const { filterFields } = require("../utils/validation");
+const { productFields } = require("../config/requests-config");
 
 const createProductBaseOnCategory = (productData, categoryName) => {
   const type = categoryName.trim().toLowerCase();
@@ -18,4 +24,47 @@ const createProductBaseOnCategory = (productData, categoryName) => {
   }
 };
 
-module.exports = { createProductBaseOnCategory };
+const changeProductCategory = async (categoryId, updateData, productId) => {
+  if (!isValidMongooseId(categoryId)) {
+    throw createError("Invalid category ID", 400);
+  }
+
+  const category = await findCategoryById(categoryId);
+
+  const newProduct = createProductBaseOnCategory(updateData, category.name);
+
+  const { _id, ...productData } = newProduct.toObject();
+
+  await Product.replaceOne({ _id: productId }, productData, {
+    overwriteDiscriminatorKey: true,
+    runValidators: true,
+  });
+
+  const populate = { path: "category", select: "_id name" };
+  const updatedProduct = await findProductById(productId, populate);
+  return updatedProduct;
+}
+
+const updateExistingProduct = async (productId, requestBody) => {
+  const { category: categoryId } = requestBody;
+  const { set, unset } = filterFields(requestBody, productFields);
+
+  const product = await findProductById(productId);
+
+  if (
+    categoryId &&
+    categoryId !== product.category.toString()
+  ) {
+    const updatedProduct = await changeProductCategory(categoryId, set, productId);
+    return updatedProduct;
+  }
+
+  const patchedProduct = applyPatch(product, set, unset);
+  await patchedProduct.save();
+
+  const populate = { path: "category", select: "_id name" };
+  const updatedProduct = await Product.findById(productId).populate(populate);
+  return updatedProduct;
+}
+
+module.exports = { createProductBaseOnCategory, updateExistingProduct };
