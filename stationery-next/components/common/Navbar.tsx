@@ -20,7 +20,7 @@ import { ChevronDown } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { getCategories } from "@/lib/tools/api";
 import { capitalizeFirstLetter } from "@/lib/utils/helperFunctions";
-import { authOptions } from "@/app/api/auth/[...next-auth]/authOptions";
+import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { CategoryNav, INavConfig } from "@/lib/types/navbar.type";
 import LogoutBtn from "./buttons/LogoutBtn";
 
