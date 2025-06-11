@@ -22,6 +22,7 @@ import { getCategories } from "@/lib/tools/api";
 import { capitalizeFirstLetter } from "@/lib/utils/helperFunctions";
 import { authOptions } from "@/app/api/auth/[...next-auth]/authOptions";
 import { CategoryNav, INavConfig } from "@/lib/types/navbar.type";
+import LogoutBtn from "./buttons/LogoutBtn";
 
 const NavListDesktop = ({ navigation }: { navigation: INavConfig[] }) => {
   return (
@@ -30,7 +31,7 @@ const NavListDesktop = ({ navigation }: { navigation: INavConfig[] }) => {
         {navigation.map((item) =>
           item?.dropdown ? (
             <Menu as="div" key={item.name} className="relative">
-              <MenuButton className="inline-flex items-center rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
+              <MenuButton className="inline-flex items-center rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none">
                 {item.name}
                 <ChevronDown className="ml-1 h-4 w-4" />
               </MenuButton>
@@ -70,7 +71,7 @@ const NavListMobile = ({ navigation }: { navigation: INavConfig[] }) => {
           item.dropdown ? (
             <Disclosure key={item.name} as="div" className="space-y-1">
               <>
-                <DisclosureButton className="flex w-full items-center rounded-md px-3 py-2 text-left text-base font-medium text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring">
+                <DisclosureButton className="flex w-full items-center rounded-md px-3 py-2 text-left text-base font-medium text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none">
                   <span>{item.name}</span>
                   <ChevronDown className="ml-1 h-4 w-4" />
                 </DisclosureButton>
@@ -110,7 +111,7 @@ const AuthMenu = ({ session }: { session: Session | null }) => {
         <>
           <Link
             href={"/cart"}
-            className="relative rounded-full bg-background p-1 text-muted-foreground hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background"
+            className="relative rounded-full bg-background p-1 text-muted-foreground hover:text-foreground focus:outline-none focus:ring-offset-2 focus:ring-offset-background"
           >
             <span className="sr-only">View cart</span>
             <ShoppingCartIcon aria-hidden="true" className="size-6" />
@@ -119,11 +120,10 @@ const AuthMenu = ({ session }: { session: Session | null }) => {
           {/* Profile dropdown */}
           <Menu as="div" className="relative ml-3">
             <div>
-              <MenuButton className="relative flex rounded-full text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background">
-                {/* TODO: update avatar */}
+              <MenuButton className="relative flex rounded-full text-sm bg-background focus:outline-none focus:ring-offset-2 focus:ring-offset-background">
                 <Avatar>
-                  <AvatarImage src="https://github.com/shadcn.png" />
-                  <AvatarFallback>CN</AvatarFallback>
+                <AvatarImage src={user.avatar} />
+                <AvatarFallback>{user.firstName.charAt(0).toUpperCase()}</AvatarFallback>
                 </Avatar>
               </MenuButton>
             </div>
@@ -141,13 +141,7 @@ const AuthMenu = ({ session }: { session: Session | null }) => {
                   Your Profile
                 </Link>
               </MenuItem>
-              <MenuItem>
-                <div
-                  className={"block px-4 py-2 text-sm text-popover-foreground data-focus:outline-hidden cursor-pointer"}
-                >
-                  Sign out
-                </div>
-              </MenuItem>
+              <LogoutBtn />
             </MenuItems>
           </Menu>
         </>
@@ -195,7 +189,7 @@ export default async function Navbar() {
         <div className="relative flex h-16 items-center justify-between">
           <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
             {/* Mobile menu button */}
-            <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background">
+            <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-muted-foreground hover:bg-muted hover:text-foreground focus:outline-none focus:ring-offset-2 focus:ring-offset-background">
               <span className="absolute -inset-0.5" />
               <span className="sr-only">Open main menu</span>
               <Bars3Icon
@@ -215,6 +209,7 @@ export default async function Navbar() {
                 alt="ATE logo"
                 height={100}
                 width={100}
+                priority
                 className="h-14 w-auto"
               />
             </div>
