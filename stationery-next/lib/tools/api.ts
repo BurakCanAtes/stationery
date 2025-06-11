@@ -3,6 +3,29 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import axiosInstance from "./axios";
 import { IAuthResponse } from "../types/responses/user.type";
 import { ISignUpRequest } from "../types/requests/user.type";
+import { IGetCategoriesResponse } from "../types/responses/category.type";
+
+/**
+ * Fetches data from a given URL using axios and handles any errors.
+ *
+ * @template T
+ * @param {string} url - The API endpoint to fetch data from.
+ * @param {AxiosRequestConfig} [options={}] - Optional axios request configuration.
+ * @returns {Promise<T>} - The data retrieved from the API.
+ * @throws Will throw an error if the request fails.
+ */
+export const fetchData = async <T>(
+  url: string,
+  options: AxiosRequestConfig = {}
+): Promise<T> => {
+  try {
+    const response: AxiosResponse<T> = await axiosInstance.get(url, options);
+    return response.data;
+  } catch (error) {
+    console.error("Error retrieving data:", error);
+    throw new Error("Could not get data");
+  }
+};
 
 /**
  * Sends a POST request to a given URL using axios and handles errors.
@@ -46,4 +69,13 @@ export const signUp = async (user: ISignUpRequest): Promise<IAuthResponse> => {
   return postData<IAuthResponse>("/auth/register", {
     ...user,
   });
+};
+
+/**
+ * Fetches all categories from the API.
+ *
+ * @returns {Promise<IGetCategoriesResponse>} - The response containing the category data.
+ */
+export const getCategories = async (): Promise<IGetCategoriesResponse> => {
+  return await fetchData<IGetCategoriesResponse>("/categories");
 };
