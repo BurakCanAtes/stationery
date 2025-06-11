@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+
 const User = require("../models/User");
 const { createError } = require("./errors");
 
@@ -13,6 +15,22 @@ const throwIfPatchEmpty = (set, unset) => {
   if (!Object.keys(set).length && !Object.keys(unset).length) {
     throw createError("No valid fields provided for update", 400);
   }
+}
+
+const isValidMongooseId = (id) => {
+  return mongoose.Types.ObjectId.isValid(id);
+};
+
+const applyPatch = (document, set, unset) => {
+  Object.entries(set).forEach(([key, value]) => {
+    document[key] = value;
+  });
+
+  Object.keys(unset).forEach((key) => {
+    document[key] = undefined;
+  });
+
+  return document;
 }
 
 const buildNestedUpdatePayload = (prefix, set = {}, unset = {}) => {
@@ -33,4 +51,10 @@ const buildNestedUpdatePayload = (prefix, set = {}, unset = {}) => {
   return updatePayload;
 }
 
-module.exports = { findUserById, buildNestedUpdatePayload, throwIfPatchEmpty };
+module.exports = {
+  findUserById,
+  buildNestedUpdatePayload,
+  throwIfPatchEmpty,
+  isValidMongooseId,
+  applyPatch,
+};
