@@ -1,3 +1,6 @@
+const Product = require("../models/Product");
+const { createError } = require("./errors");
+
 const buildFilterQuery = (req) => {
   const { category, search, minPrice, maxPrice, inStock } = req.query;
   const query = {};
@@ -50,5 +53,12 @@ const buildSortQuery = (req) => {
   return { [field]: isDescending ? -1 : 1 };
 };
 
+const findProductById = async (id, populate) => {
+  const product = await Product.findById(id).populate(populate);
+  if (!product) {
+    throw createError("Product not found!", 404);
+  }
+  return product;
+}
 
-module.exports = { buildFilterQuery, buildSortQuery };
+module.exports = { buildFilterQuery, buildSortQuery, findProductById };

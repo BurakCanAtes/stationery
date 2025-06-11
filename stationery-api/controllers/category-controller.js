@@ -2,7 +2,7 @@ const Category = require("../models/Category");
 const { categoryFields } = require("../config/requests-config");
 const { updateCategory } = require("../services/category-service");
 const { findCategoryById } = require("../utils/category-utils");
-const { isInvalidBody } = require("../utils/auth-utils");
+const { isInvalidBody } = require("../utils/validation");
 const { createError, createValidationError } = require("../utils/errors");
 
 const getAllCategories = async (req, res, next) => {

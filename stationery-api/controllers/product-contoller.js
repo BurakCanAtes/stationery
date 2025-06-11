@@ -5,7 +5,7 @@ const { createProductBaseOnCategory } = require("../services/product-service");
 const { createError, createValidationError } = require("../utils/errors");
 const { filterFields } = require("../utils/validation");
 const { findCategoryById } = require("../utils/category-utils");
-const { buildFilterQuery, buildSortQuery } = require("../utils/product-utils");
+const { buildFilterQuery, buildSortQuery, findProductById } = require("../utils/product-utils");
 
 const addNewProduct = async (req, res, next) => {
   try {
@@ -62,4 +62,22 @@ const getProducts = async (req, res, next) => {
   }
 };
 
-module.exports = { addNewProduct, getProducts };
+const getProductById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const populate = {
+      path: "category",
+      select: "_id name"
+    }
+    const product = await findProductById(id, populate);
+
+    res.status(200).json(product);
+  } catch (error) {
+    if (error.name === "CastError" || error.name === "BSONTypeError") {
+      return next(createError("Invalid product ID", 400));
+    }
+    return next(error);
+  }
+};
+
+module.exports = { addNewProduct, getProducts, getProductById };
