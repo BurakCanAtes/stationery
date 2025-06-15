@@ -54,7 +54,7 @@ router.use("/users/addresses", verifyUser, userAddressRoutes);
 router.use("/upload", verifyUser, uploadRoutes);
 router.use("/categories", categoryRoutes);
 router.use("/products", productRoutes);
-router.use("/cart", cartRoutes);
+router.use("/cart", verifyUser, cartRoutes);
 
 app.use("/api", router);
 app.use(handleErrors);

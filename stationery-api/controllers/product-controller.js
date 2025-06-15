@@ -1,12 +1,11 @@
 const Product = require("../models/Product");
 const { productFields } = require("../config/requests-config");
-const { DEFAULT_PAGE, PAGE_SIZE, MAX_PAGE_SIZE } = require("../config/product-config");
 const { createProductBaseOnCategory, updateExistingProduct } = require("../services/product-service");
 const { createError, createValidationError } = require("../utils/errors");
 const { filterFields } = require("../utils/validation");
 const { findCategoryById } = require("../utils/category-utils");
 const { buildFilterQuery, buildSortQuery, findProductById } = require("../utils/product-utils");
-const { isValidMongooseId } = require("../utils/shared-utils");
+const { isValidMongooseId, createPagination } = require("../utils/shared-utils");
 
 const addNewProduct = async (req, res, next) => {
   try {
@@ -34,21 +33,15 @@ const getProducts = async (req, res, next) => {
     const query = buildFilterQuery(req);
     const sortOption = buildSortQuery(req);
 
-    const pageNumber = Math.max(1, parseInt(req.query.page, 10) || DEFAULT_PAGE);
-    const pageSize = Math.min(
-      Math.max(1, parseInt(req.query.limit, 10) || PAGE_SIZE),
-      MAX_PAGE_SIZE
-    );
-    const skip = (pageNumber - 1) * pageSize;
+    const totalProducts = await Product.countDocuments(query);
+
+    const { skip, pageNumber, totalPages, pageSize, isLastPage } =
+      createPagination(req.query.page, req.query.limit, totalProducts);
 
     const products = await Product.find(query)
       .sort(sortOption)
       .skip(skip)
       .limit(pageSize);
-
-    const totalProducts = await Product.countDocuments(query);
-    const totalPages = Math.ceil(totalProducts / pageSize);
-    const isLastPage = pageNumber >= totalPages;
 
     res.status(200).json({
       page: pageNumber,
@@ -104,8 +97,6 @@ const deleteProduct = async (req, res, next) => {
     if (!deletedProduct) {
       throw createError("Product not found", 404);
     }
-
-    // TODO: remove the product from the carts too
 
     res.status(200).json({ message: "Product deleted successfully" });
   } catch (error) {

@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const User = require("../models/User");
 const { createError } = require("./errors");
+const { DEFAULT_PAGE, PAGE_SIZE, MAX_PAGE_SIZE } = require("../config/product-config");
 
 const findUserById = async (userId) => {
   const user = await User.findById(userId);
@@ -51,10 +52,38 @@ const buildNestedUpdatePayload = (prefix, set = {}, unset = {}) => {
   return updatePayload;
 }
 
+const createPagination = (
+  queryPage,
+  queryLimit,
+  totalItems,
+  defaultPage = DEFAULT_PAGE,
+  defaultSize = PAGE_SIZE,
+  defaultMaxSize = MAX_PAGE_SIZE
+) => {
+  const pageNumber = Math.max(1, parseInt(queryPage, 10) || defaultPage);
+  const pageSize = Math.min(
+    Math.max(1, parseInt(queryLimit, 10) || defaultSize),
+    defaultMaxSize
+  );
+  const skip = (pageNumber - 1) * pageSize;
+
+  const totalPages = Math.ceil(totalItems / pageSize);
+  const isLastPage = pageNumber >= totalPages;
+
+  return {
+    skip,
+    pageNumber,
+    totalPages,
+    pageSize,
+    isLastPage,
+  };
+};
+
 module.exports = {
   findUserById,
   buildNestedUpdatePayload,
   throwIfPatchEmpty,
   isValidMongooseId,
   applyPatch,
+  createPagination
 };
