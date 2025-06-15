@@ -6,6 +6,10 @@ const MAX_NUMBER_IN_STOCK = 5000;
 const MIN_BOOK_PAGES = 1;
 const MAX_BOOK_PAGES = 20000;
 
+const DEFAULT_PAGE = 1;
+const PAGE_SIZE = 10;
+const MAX_PAGE_SIZE = 20;
+
 const PRODUCT_TYPES = {
   STATIONERY: "Stationery",
   BOOK: "Book",
@@ -19,5 +23,8 @@ module.exports = {
   MAX_NUMBER_IN_STOCK,
   MIN_BOOK_PAGES,
   MAX_BOOK_PAGES,
-  PRODUCT_TYPES
+  PRODUCT_TYPES,
+  DEFAULT_PAGE,
+  PAGE_SIZE,
+  MAX_PAGE_SIZE,
 };
