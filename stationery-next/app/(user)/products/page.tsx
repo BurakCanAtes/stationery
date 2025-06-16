@@ -1,3 +1,4 @@
+import ProductCard from "@/components/products/ProductCard";
 import { getCategoryById, getProducts } from "@/lib/tools/api";
 import { capitalizeFirstLetter } from "@/lib/utils/helperFunctions";
 
@@ -17,12 +18,10 @@ export default async function Products(props: { searchParams: SearchParams }) {
       <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold">
         {category.name ? capitalizeFirstLetter(category.name) : "Products"}
       </h1>
-      <main className="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <div className="w-full h-52 bg-red-500"></div>
-        <div className="w-full h-52 bg-red-500"></div>
-        <div className="w-full h-52 bg-red-500"></div>
-        <div className="w-full h-52 bg-red-500"></div>
-        <div className="w-full h-52 bg-red-500"></div>
+      <main className="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4">
+        {products.data.map((product) => (
+          <ProductCard key={product._id} product={product} />
+        ))}
       </main>
     </div>
   );

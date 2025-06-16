@@ -10,7 +10,7 @@ enum ProductTypes {
 export interface BaseProduct extends Meta {
   _id: string;
   name: string;
-  category: Category | string;
+  category: Category;
   price: number;
   images: string[];
   stock: number;
