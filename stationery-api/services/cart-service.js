@@ -53,54 +53,44 @@ const createCartAndAddProduct = async (userId, product, query) => {
   const cart = new Cart({ user: userId, items: [product] });
   await cart.save();
 
-  return paginateCartItems(query, cart);
+  const populatedCart = await Cart.findOne({ user: userId }).populate("items.product");
+  const response = paginateCartItems(query, populatedCart);
+  const updatedItem = populatedCart.items.length === 1 ? populatedCart.items[0] : null;
+
+  return { updatedItem, ...response };
 };
 
 const updateCartItems = async (cart, newItem, query, userId) => {
   const { product, quantity = 1 } = newItem;
 
-  const wasCartEmpty = cart.items.length === 0;
-  const updatedCart = cart.items;
+  const updatedCart = [...cart.items];
   const cartItemIndex = updatedCart.findIndex(
     (item) => item.product._id.toString() === product
   );
-
-  let updatedItem = null;
 
   if (cartItemIndex > -1) {
     // If product exists, update quantity
     updatedCart[cartItemIndex].quantity = quantity;
     updatedCart[cartItemIndex].updatedAt = Date.now();
-    updatedItem = updatedCart[cartItemIndex];
 
     // If new quantity is 0, remove the product from the cart
     if (quantity === 0) {
       updatedCart.splice(cartItemIndex, 1);
-      updatedItem = null;
     }
   } else {
     // If product does not exist and quantity > 0, add it to cart
     if (quantity > 0) {
       updatedCart.push({ product, quantity });
-      updatedItem = updatedCart[updatedCart.length - 1];
     }
   }
 
   cart.items = updatedCart;
   await cart.save();
 
-  // Re-populate the products if cart was empty before adding the first product
-  if (wasCartEmpty) {
-    const populatedCart = await Cart.findOne({ user: userId }).populate("items.product");
-    const response = paginateCartItems(query, populatedCart);
-    const updatedItem = populatedCart.items.length === 1 ? populatedCart.items[0] : null;
-    return {
-      updatedItem,
-      ...response,
-    };
-  }
+  const populatedCart = await Cart.findOne({ user: userId }).populate("items.product");
+  const updatedItem = populatedCart.items.find(item => item.product._id.toString() === product) || null;
 
-  const response = paginateCartItems(query, cart);
+  const response = paginateCartItems(query, populatedCart);
 
   return {
     updatedItem,

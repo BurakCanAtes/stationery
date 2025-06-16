@@ -6,6 +6,6 @@ const router = Router();
 
 router.get("", cartController.getUserCart);
 router.post("", cartController.updateCart);
-router.delete("", (req, res) => res.send("Remove everything from cart")); // TODO: Create delete cart function
+router.delete("", cartController.clearCart);
 
 module.exports = router;

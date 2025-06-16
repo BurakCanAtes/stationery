@@ -52,4 +52,18 @@ const updateCart = async (req, res, next) => {
   }
 }
 
-module.exports = { getUserCart, updateCart };
+const clearCart = async (req, res, next) => {
+  try {
+    const { userId } = req;
+    // throws error if user does not exist
+    await findUserById(userId);
+
+    await Cart.deleteOne({ user: userId });
+
+    res.status(200).json({ message: "Cart cleared successfully" });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+module.exports = { getUserCart, updateCart, clearCart };
