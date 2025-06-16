@@ -9,10 +9,8 @@ export default async function Products(props: { searchParams: SearchParams }) {
   const category = await getCategoryById(
     (searchParams.category as string) || ""
   );
-  const products = await getProducts(1);
-
-  console.log(category);
-  console.log(products);
+  const products = await getProducts(searchParams);
+  
   return (
     <div className="mx-auto max-w-7xl p-4 sm:p-6 md:py-8">
       <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold">

@@ -32,3 +32,14 @@ export interface Toy extends BaseProduct {
   ageRange: string;
   brand: string;
 }
+
+export interface ProductQueryParams {
+  search?: string;
+  category?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  inStock?: boolean;
+  sort?: string;
+  page?: number;
+  limit?: number;
+}
