@@ -3,7 +3,11 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import axiosInstance from "./axios";
 import { IAuthResponse } from "../types/responses/user.type";
 import { ISignUpRequest } from "../types/requests/user.type";
-import { IGetCategoriesResponse } from "../types/responses/category.type";
+import { ICategoryResponse, IGetCategoriesResponse } from "../types/responses/category.type";
+import { IGetAllProductsResponse } from "../types/responses/product.type";
+import { DESCENDING_SORT, PAGE_SIZE } from "../constants/productsParams";
+import { ProductQueryParams } from "../types/product.type";
+import { buildParams } from "../utils/helperFunctions";
 
 /**
  * Fetches data from a given URL using axios and handles any errors.
@@ -78,4 +82,34 @@ export const signUp = async (user: ISignUpRequest): Promise<IAuthResponse> => {
  */
 export const getCategories = async (): Promise<IGetCategoriesResponse> => {
   return await fetchData<IGetCategoriesResponse>("/categories");
+};
+
+
+/**
+ * Fetches a paginated list of products from the API.
+ * @param {string} id - The id of category to retrieve.
+ *
+ * @returns {Promise<ICategoryResponse>} - The response containing the category data.
+ */
+export const getCategoryById = async (id: string): Promise<ICategoryResponse> => {
+  return await fetchData<ICategoryResponse>(`/categories/${id}`);
+};
+
+/**
+ * Fetches a paginated list of products from the API.
+ *
+ * @param {ProductQueryParams} params - Optional query parameters for the request.
+ * @returns {Promise<IGetAllProductsResponse>} - The response containing the product data.
+ */
+export const getProducts = async (
+  params: ProductQueryParams = {}
+): Promise<IGetAllProductsResponse> => {
+  const finalParams: ProductQueryParams = {
+    sort: DESCENDING_SORT,
+    limit: PAGE_SIZE,
+    ...params,
+  };
+  const queryString = buildParams(finalParams);
+  const url = `/products${queryString ? `?${queryString}` : ""}`;
+  return fetchData<IGetAllProductsResponse>(url);
 };

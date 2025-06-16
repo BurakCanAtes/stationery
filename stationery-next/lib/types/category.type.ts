@@ -1,3 +1,5 @@
+import { ICategoryResponse } from "./responses/category.type";
+
 enum CategoryList {
   STATIONERY = "stationery",
   BOOK = "book",
@@ -7,9 +9,6 @@ enum CategoryList {
 export interface Category {
   _id: string;
   name: CategoryList;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
 }
 
-export type Categories = Category[];
+export type Categories = ICategoryResponse[];

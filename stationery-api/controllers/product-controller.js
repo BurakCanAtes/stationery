@@ -44,7 +44,10 @@ const getProducts = async (req, res, next) => {
     const products = await Product.find(query)
       .sort(sortOption)
       .skip(skip)
-      .limit(pageSize);
+      .limit(pageSize).populate({
+        path: "category",
+        select: "_id name"
+      });
 
     const totalProducts = await Product.countDocuments(query);
     const totalPages = Math.ceil(totalProducts / pageSize);

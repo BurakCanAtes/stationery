@@ -1,10 +1,12 @@
+import { Meta } from "../data.type";
+
 export enum UserRoles {
   ADMIN = "admin",
   USER = "user",
 }
 
 // TODO: update wishlist and addresses types
-export interface User {
+export interface User extends Meta {
   _id: string;
   firstName: string;
   lastName: string;
@@ -13,9 +15,6 @@ export interface User {
   role: UserRoles;
   wishlist: any[];
   addresses: any[];
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
 }
 
 export interface IAuthResponse {
