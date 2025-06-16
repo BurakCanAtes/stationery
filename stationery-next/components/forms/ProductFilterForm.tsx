@@ -76,6 +76,16 @@ const ProductFilterForm = ({ categories }: { categories: Categories }) => {
     router.push(`/products?${params.toString()}`);
   }
 
+  const clearFilters = () => {
+    form.reset({
+      category: "",
+      minPrice: 0,
+      maxPrice: 999999,
+      inStock: false,
+    });
+    router.push("/products");
+  };
+
   return (
     <Accordion type="single" collapsible className="mt-4">
       <AccordionItem
@@ -138,9 +148,12 @@ const ProductFilterForm = ({ categories }: { categories: Categories }) => {
                 name="inStock"
                 label="In Stock"
               />
-              <Button type="submit" className="cursor-pointer">
-                Apply
-              </Button>
+              <div className="flex gap-2 justify-end">
+                <Button type="button" className="cursor-pointer" onClick={clearFilters} disabled={!isFilterApplied}>
+                  Clear Filters
+                </Button>
+                <Button type="submit" className="cursor-pointer">Apply</Button>
+              </div>
             </form>
           </Form>
         </AccordionContent>

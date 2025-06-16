@@ -51,6 +51,13 @@ const ControlledInput = <T extends FieldValues>({
                   : e.target.value;
                 field.onChange(value);
               }}
+              value={
+                type === "number"
+                  ? field.value === undefined || isNaN(field.value)
+                    ? ""
+                    : field.value
+                  : field.value
+              }
             />
           </FormControl>
           {preserveMessageSpace ? (
