@@ -44,4 +44,16 @@ export const SignUpFormValidation = z
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
-  });;
+  });
+
+export const ProductFilterFormValidation = z
+  .object({
+    category: z.string(),
+    minPrice: z.number().min(0, "Price cannot be lower than 0"),
+    maxPrice: z.number().max(999999, "Price cannot exceed $999.999"),
+    inStock: z.boolean(),
+  })
+  .refine((data) => data.minPrice < data.maxPrice, {
+    message: "Max price must be higher than min price",
+    path: ["maxPrice"],
+  });

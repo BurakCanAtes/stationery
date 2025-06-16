@@ -11,6 +11,9 @@ interface IControlledInputProps<T extends FieldValues>
   label: string;
   type: HTMLInputTypeAttribute;
   required?: boolean;
+  inputStyles?: string;
+  messageStyles?: string;
+  preserveMessageSpace?: boolean;
 }
 
 const ControlledInput = <T extends FieldValues>({
@@ -19,21 +22,51 @@ const ControlledInput = <T extends FieldValues>({
   label,
   type,
   required = false,
+  inputStyles,
+  preserveMessageSpace,
+  messageStyles,
   ...inputProps
 }: IControlledInputProps<T>) => {
+  const isNumber = type === "number";
+
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem>
+        <FormItem className={inputStyles}>
           <FormLabel className="tracking-wide">
-            {label}{required && "*"}
+            {label}
+            {required && "*"}
           </FormLabel>
           <FormControl>
-          <Input required={required} {...field} {...inputProps} type={type} />
+            <Input
+              required={required}
+              {...field}
+              {...inputProps}
+              type={type}
+              onChange={(e) => {
+                const value = isNumber
+                  ? e.target.valueAsNumber
+                  : e.target.value;
+                field.onChange(value);
+              }}
+              value={
+                type === "number"
+                  ? field.value === undefined || isNaN(field.value)
+                    ? ""
+                    : field.value
+                  : field.value
+              }
+            />
           </FormControl>
-          <FormMessage />
+          {preserveMessageSpace ? (
+            <div className="min-h-[2rem]">
+              <FormMessage className={messageStyles} />
+            </div>
+          ) : (
+            <FormMessage className={messageStyles} />
+          )}
         </FormItem>
       )}
     />
