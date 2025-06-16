@@ -1,23 +1,81 @@
+"use client";
+
+import { useMemo } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
+import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
 import { Categories } from "@/lib/types/category.type";
 import { capitalizeFirstLetter } from "@/lib/utils/helperFunctions";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { Checkbox } from "../ui/checkbox";
+import { ProductFilterFormValidation } from "@/lib/validation";
+import ControlledDropdown from "../controlled/ControlledDropdown";
+import ControlledInput from "../controlled/ControlledInput";
+import ControlledCheckbox from "../controlled/ControlledCheckbox";
 
 const ProductFilterForm = ({ categories }: { categories: Categories }) => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const defaultValues = useMemo(
+    () => ({
+      category: searchParams.get("category") || "",
+      minPrice: parseInt(searchParams.get("minPrice") || "0", 10) || 0,
+      maxPrice:
+        parseInt(searchParams.get("maxPrice") || "999999", 10) || 999999,
+      inStock: false,
+    }),
+    [searchParams]
+  );
+
+  const isFilterApplied = useMemo(
+    () =>
+      (searchParams.has("category") && searchParams.get("category") !== "") ||
+      (searchParams.has("inStock") && searchParams.get("inStock") === "true") ||
+      (searchParams.has("minPrice") &&
+        searchParams.get("minPrice") !== "" &&
+        searchParams.get("minPrice") !== "0") ||
+      (searchParams.has("maxPrice") &&
+        searchParams.get("maxPrice") !== "" &&
+        searchParams.get("maxPrice") !== "999999"),
+    [searchParams]
+  );
+
+  const form = useForm<z.infer<typeof ProductFilterFormValidation>>({
+    resolver: zodResolver(ProductFilterFormValidation),
+    defaultValues,
+  });
+
+  const categoryOptions = categories.map((category) => ({
+    label: capitalizeFirstLetter(category.name),
+    value: category._id,
+  }));
+
+  function onSubmit(data: z.infer<typeof ProductFilterFormValidation>) {
+    const params = new URLSearchParams(searchParams.toString());
+    for (const [key, value] of Object.entries(data)) {
+      if (
+        (typeof value === "string" && value !== "") ||
+        (typeof value === "number" && !isNaN(value)) ||
+        (typeof value === "boolean" && value === true)
+      ) {
+        params.set(key, value.toString());
+      } else {
+        params.delete(key);
+      }
+    }
+    params.set("page", "1");
+    router.push(`/products?${params.toString()}`);
+  }
+
   return (
     <Accordion type="single" collapsible className="mt-4">
       <AccordionItem
@@ -27,45 +85,64 @@ const ProductFilterForm = ({ categories }: { categories: Categories }) => {
         <AccordionTrigger className="items-center justify-between">
           <div className="w-full flex items-baseline justify-between">
             <h2 className="text-xl font-semibold">Filter</h2>
-            <p className="text-green-400">Applied</p>
+            {isFilterApplied && <p className="text-green-400">Applied</p>}
           </div>
         </AccordionTrigger>
         <AccordionContent>
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-col gap-1.5">
-              <p className="font-semibold">Category:</p>
-              <Select>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Select Category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category._id} value={category._id}>
-                      {capitalizeFirstLetter(category.name)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <p className="font-semibold">Price:</p>
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="flex flex-col gap-3"
+            >
+              <ControlledDropdown
+                control={form.control}
+                name="category"
+                label="Category"
+                options={categoryOptions}
+                placeholder="Select Category"
+              />
               <div className="flex gap-2">
-                <Input type="number" placeholder="0" className="max-w-40" />
-                <Input
+                <ControlledInput
+                  control={form.control}
+                  name="minPrice"
+                  label="Min Price"
+                  type="number"
+                  placeholder="0"
+                  inputStyles="max-w-40"
+                  preserveMessageSpace={
+                    !!(
+                      form.formState.errors.minPrice ||
+                      form.formState.errors.maxPrice
+                    )
+                  }
+                  messageStyles="text-xs"
+                />
+                <ControlledInput
+                  control={form.control}
+                  name="maxPrice"
+                  label="Max Price"
                   type="number"
                   placeholder="999999"
-                  className="max-w-40"
+                  inputStyles="max-w-40"
+                  preserveMessageSpace={
+                    !!(
+                      form.formState.errors.minPrice ||
+                      form.formState.errors.maxPrice
+                    )
+                  }
+                  messageStyles="text-xs"
                 />
               </div>
-            </div>
-            <div className="flex items-center gap-1">
-              <p className="font-semibold">In Stock:</p>
-              <Checkbox />
-            </div>
-            <div className="w-full flex justify-end">
-              <Button type="submit">Apply</Button>
-            </div>
-          </div>
+              <ControlledCheckbox
+                control={form.control}
+                name="inStock"
+                label="In Stock"
+              />
+              <Button type="submit" className="cursor-pointer">
+                Apply
+              </Button>
+            </form>
+          </Form>
         </AccordionContent>
       </AccordionItem>
     </Accordion>
