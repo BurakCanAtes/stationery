@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 import { ProductResponse } from "@/lib/types/responses/product.type";
 import { textOverflowEllipsis } from "@/styles/commonStyles";
@@ -13,7 +14,7 @@ export default function ProductCard({ product }: IProductCardProps) {
   const thumbnail = product.images[0];
 
   return (
-    <div className="w-full flex flex-col">
+    <Link href={`/products/${product._id}`} className="w-full flex flex-col">
       <div className="relative w-full aspect-[4/3]">
         <Image
           src={thumbnail}
@@ -42,6 +43,6 @@ export default function ProductCard({ product }: IProductCardProps) {
           ${formatAmount(product.price)}
         </h4>
       </div>
-    </div>
+    </Link>
   );
 }
