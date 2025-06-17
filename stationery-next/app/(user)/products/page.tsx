@@ -3,7 +3,7 @@ import SortDropdown from "@/components/common/SortDropdown";
 import ProductFilterForm from "@/components/forms/ProductFilterForm";
 import ProductCard from "@/components/products/ProductCard";
 import { getCategories, getCategoryById, getProducts } from "@/lib/tools/api";
-import { buildParams, capitalizeFirstLetter } from "@/lib/utils/helperFunctions";
+import { capitalizeFirstLetter } from "@/lib/utils/helperFunctions";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -14,9 +14,6 @@ export default async function Products(props: { searchParams: SearchParams }) {
     (searchParams.category as string) || ""
   );
   const products = await getProducts(searchParams);
-
-  const params = buildParams({ ...searchParams, page: 4 });
-  console.log(params);
 
   const { page, totalPages } = products;
 
