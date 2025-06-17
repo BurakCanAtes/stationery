@@ -4,6 +4,7 @@ const updateUserFields = ["firstName", "lastName", "avatar"];
 const addressFields = ["label", "fullName", "phone", "street", "city", "postalCode", "country", "isDefault"];
 const categoryFields = ["name"];
 const productFields = ["name", "category", "price", "images", "stock", "color", "brand", "author", "publisher", "pages", "ageRange"];
+const cartItemFields = ["product", "quantity"];
 
 module.exports = {
   registerFields,
@@ -12,4 +13,5 @@ module.exports = {
   addressFields,
   categoryFields,
   productFields,
+  cartItemFields
 };
