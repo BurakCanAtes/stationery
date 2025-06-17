@@ -4,7 +4,7 @@ import axiosInstance from "./axios";
 import { IAuthResponse } from "../types/responses/user.type";
 import { ISignUpRequest } from "../types/requests/user.type";
 import { ICategoryResponse, IGetCategoriesResponse } from "../types/responses/category.type";
-import { IGetAllProductsResponse } from "../types/responses/product.type";
+import { IGetAllProductsResponse, ProductResponse } from "../types/responses/product.type";
 import { DESCENDING_SORT, PAGE_SIZE } from "../constants/productsParams";
 import { ProductQueryParams } from "../types/product.type";
 import { buildParams } from "../utils/helperFunctions";
@@ -86,7 +86,7 @@ export const getCategories = async (): Promise<IGetCategoriesResponse> => {
 
 
 /**
- * Fetches a paginated list of products from the API.
+ * Fetches a category by its id from the API.
  * @param {string} id - The id of category to retrieve.
  *
  * @returns {Promise<ICategoryResponse>} - The response containing the category data.
@@ -112,4 +112,14 @@ export const getProducts = async (
   const queryString = buildParams(finalParams);
   const url = `/products${queryString ? `?${queryString}` : ""}`;
   return fetchData<IGetAllProductsResponse>(url);
+};
+
+/**
+ * Fetches a product by its id from the API.
+ * @param {string} id - The id of product to retrieve.
+ *
+ * @returns {Promise<ProductResponse>} - The response containing the product data.
+ */
+export const getProductById = async (id: string): Promise<ProductResponse> => {
+  return await fetchData<ProductResponse>(`/products/${id}`);
 };

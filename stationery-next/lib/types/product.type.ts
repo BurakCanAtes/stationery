@@ -1,7 +1,7 @@
 import { Category } from "./category.type";
 import { Meta } from "./data.type";
 
-enum ProductTypes {
+export enum ProductTypes {
   STATIONERY = "Stationery",
   BOOK = "Book",
   TOY = "Toy",
@@ -18,17 +18,20 @@ export interface BaseProduct extends Meta {
 }
 
 export interface Stationery extends BaseProduct {
+  productType: ProductTypes.STATIONERY;
   brand: string;
   color?: string;
 }
 
 export interface Book extends BaseProduct {
+  productType: ProductTypes.BOOK;
   author: string;
   pages: number;
   publisher: string;
 }
 
 export interface Toy extends BaseProduct {
+  productType: ProductTypes.TOY;
   ageRange: string;
   brand: string;
 }
