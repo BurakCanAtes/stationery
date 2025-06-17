@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import { Session } from "next-auth";
 
 import axiosInstance from "./axios";
 import { IAuthResponse } from "../types/responses/user.type";
@@ -8,6 +9,7 @@ import { IGetAllProductsResponse } from "../types/responses/product.type";
 import { DESCENDING_SORT, PAGE_SIZE } from "../constants/productsParams";
 import { ProductQueryParams } from "../types/product.type";
 import { buildParams } from "../utils/helperFunctions";
+import { ICartResponse } from "../types/responses/cart.type";
 
 /**
  * Fetches data from a given URL using axios and handles any errors.
@@ -112,4 +114,18 @@ export const getProducts = async (
   const queryString = buildParams(finalParams);
   const url = `/products${queryString ? `?${queryString}` : ""}`;
   return fetchData<IGetAllProductsResponse>(url);
+};
+
+/**
+ * Fetches user cart from the API.
+ * @param {Session} user - The session that contains the user data.
+ *
+ * @returns {Promise<ICartResponse>} - The response containing the cart data.
+ */
+export const getUserCart = async (user: Session): Promise<ICartResponse> => {
+  return await fetchData<ICartResponse>("/cart", {
+    headers: {
+      Authorization: `Bearer ${user.accessToken}`
+    }
+  });
 };
