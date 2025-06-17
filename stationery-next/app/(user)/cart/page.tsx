@@ -1,4 +1,4 @@
-import CartDesktop from "@/components/cart/CartDesktop";
+import ShoppingCart from "@/components/cart/ShoppingCart";
 
 export default function Cart() {
   return (
@@ -9,7 +9,7 @@ export default function Cart() {
         </h1>
         <p>2 items in your cart</p>
       </header>
-      <CartDesktop />
+      <ShoppingCart />
     </div>
   );
 }

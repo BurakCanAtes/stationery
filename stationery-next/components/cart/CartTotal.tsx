@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 
 const CartTotal = () => {
   return (
-    <section className="flex flex-col gap-4 ml-auto w-1/2 p-4 rounded-3xl shadow-2xl/50">
+    <section className="flex flex-col gap-4 w-full md:p-4 md:ml-auto md:w-1/2 lg:rounded-3xl lg:shadow-2xl/50">
       <h4 className="text-xl font-bold">Cart Total</h4>
       <div className="flex flex-col gap-1">
         <div className="flex justify-between">
