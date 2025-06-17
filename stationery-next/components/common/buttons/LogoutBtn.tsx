@@ -2,14 +2,18 @@
 
 import { MenuItem } from "@headlessui/react";
 import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function LogoutBtn() {
-  // TODO: add notification, redirect user to login
-  const handleLogout = () => {
-    signOut();
-    console.log("Logout success");
-  };
+  const router = useRouter();
 
+  const handleLogout = async () => {
+    const data = await signOut({ redirect: false, callbackUrl: "/auth/login" });
+    toast.success("Logout successful!", { id: "logout-success" });
+    router.push(data.url);
+  };
+  
   return (
     <MenuItem as="div" onClick={handleLogout}>
       <div

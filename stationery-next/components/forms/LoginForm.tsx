@@ -6,6 +6,7 @@ import { z } from "zod";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
 import { Button } from "../ui/button";
 import { Form } from "@/components/ui/form";
@@ -33,15 +34,15 @@ export function LoginForm() {
         redirect: false,
       });
 
-      // TODO: add notifications
       if (res?.ok) {
-        console.log("Login Success!");
-        router.push("/");
+        toast.success("Login successful!", { id: "login-success" });
+        router.push("/products");
       } else {
-        console.log(res?.error || "Something went wrong");
+        toast.error(res?.error || "Something went wrong", { id: "login-error" });
       }
     } catch (error) {
       console.error("Login failed:", error);
+      toast.error("Something went wrong. Please try again.", { id: "login-server-error" });
     }
   }
 
