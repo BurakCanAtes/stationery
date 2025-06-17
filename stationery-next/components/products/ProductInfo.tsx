@@ -1,5 +1,48 @@
+import { ProductTypes } from "@/lib/types/product.type";
 import { ProductResponse } from "@/lib/types/responses/product.type";
 import { formatAmount } from "@/lib/utils/helperFunctions";
+
+const ProductSubInfo = ({ product }: { product: ProductResponse }) => {
+  if(product.productType === ProductTypes.STATIONERY) {
+    return (
+      <>
+        <h4 className="text-xl font-medium">
+          Color: <span className="font-bold text-neutral-600">{product.color || "N/A"}</span>
+        </h4>
+        <h4 className="text-xl font-medium">
+          Brand: <span className="font-bold text-neutral-600">{product.brand}</span>
+        </h4>
+      </>
+    );
+  }
+  if(product.productType === ProductTypes.BOOK) {
+    return (
+      <>
+        <h4 className="text-xl font-medium">
+          Author: <span className="font-bold text-neutral-600">{product.author}</span>
+        </h4>
+        <h4 className="text-xl font-medium">
+          Publisher: <span className="font-bold text-neutral-600">{product.publisher}</span>
+        </h4>
+        <h4 className="text-xl font-medium">
+          Pages: <span className="font-bold text-neutral-600">{product.pages}</span>
+        </h4>
+      </>
+    )
+  }
+  if(product.productType === ProductTypes.TOY) {
+    return (
+      <>
+        <h4 className="text-xl font-medium">
+          Brand: <span className="font-bold text-neutral-600">{product.brand}</span>
+        </h4>
+        <h4 className="text-xl font-medium">
+          Age Range: <span className="font-bold text-neutral-600">{product.ageRange}</span>
+        </h4>
+      </>
+    );
+  }
+};
 
 const ProductInfo = ({ product }: { product: ProductResponse }) => {
   return (
@@ -16,12 +59,7 @@ const ProductInfo = ({ product }: { product: ProductResponse }) => {
         </h3>
       </div>
       <div className="flex flex-col gap-3">
-        <h4 className="text-xl font-medium">
-          Color: <span className="font-bold text-neutral-600">Gray</span>
-        </h4>
-        <h4 className="text-xl font-medium">
-          Brand: <span className="font-bold text-neutral-600">Swingline</span>
-        </h4>
+        <ProductSubInfo product={product} />
         <h4 className="text-xl font-medium">
           Stock: <span className="font-bold text-neutral-600">{product.stock}</span>
         </h4>
