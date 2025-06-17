@@ -1,8 +1,9 @@
+import Paging from "@/components/common/Paging";
 import SortDropdown from "@/components/common/SortDropdown";
 import ProductFilterForm from "@/components/forms/ProductFilterForm";
 import ProductCard from "@/components/products/ProductCard";
 import { getCategories, getCategoryById, getProducts } from "@/lib/tools/api";
-import { capitalizeFirstLetter } from "@/lib/utils/helperFunctions";
+import { buildParams, capitalizeFirstLetter } from "@/lib/utils/helperFunctions";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -14,6 +15,11 @@ export default async function Products(props: { searchParams: SearchParams }) {
   );
   const products = await getProducts(searchParams);
 
+  const params = buildParams({ ...searchParams, page: 4 });
+  console.log(params);
+
+  const { page, totalPages } = products;
+
   return (
     <div className="mx-auto max-w-7xl p-4 sm:p-6 md:py-8">
       <header className="flex items-center justify-between">
@@ -21,13 +27,16 @@ export default async function Products(props: { searchParams: SearchParams }) {
           {category.name ? capitalizeFirstLetter(category.name) : "Products"}
         </h1>
         <SortDropdown />
-      </header>
+      </header>
       <ProductFilterForm categories={categories.data} />
       <main className="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4">
         {products.data.map((product) => (
           <ProductCard key={product._id} product={product} />
         ))}
       </main>
+      <div className="mt-6 mb-2">
+        <Paging page={page} totalPages={totalPages} searchParams={searchParams} />
+      </div>
     </div>
   );
 }
