@@ -7,6 +7,8 @@ import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -57,15 +59,18 @@ export function SignupForm() {
         redirect: false,
       });
 
-      // TODO: add notifications
       if (res?.ok) {
-        console.log("Sign Up Success!");
-        router.push("/");
+        toast.success("Sign Up Success!", { id: "signup-success" });
+        router.push("/products");
       } else {
-        console.log(res?.error || "Something went wrong");
+        toast.error(res?.error || "Something went wrong", { id: "signup-error" });
       }
     } catch (error) {
-      console.error("Sign-up failed:", error);
+      if (axios.isAxiosError(error)) {
+        toast.error(error?.response?.data?.error, { id: "signup-server-error" });
+      } else {
+        toast.error("Something went wrong. Please try again.", { id: "signup-server-error" });
+      }
     }
   }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -35,6 +35,17 @@ const ProductFilterForm = ({ categories }: { categories: Categories }) => {
     }),
     [searchParams]
   );
+
+  useEffect(() => {
+    const newValues = {
+      category: searchParams.get("category") || "",
+      minPrice: parseInt(searchParams.get("minPrice") || "0", 10) || 0,
+      maxPrice: parseInt(searchParams.get("maxPrice") || "999999", 10) || 999999,
+      inStock: searchParams.get("inStock") === "true",
+    };
+
+    form.reset(newValues);
+  }, [searchParams]);
 
   const isFilterApplied = useMemo(
     () =>
