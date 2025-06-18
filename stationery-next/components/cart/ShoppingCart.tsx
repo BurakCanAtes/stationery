@@ -30,8 +30,10 @@ const ShoppingCart = () => {
           </div>
         )}
         {cart.data.length === 0 && <EmptyResult text="Your cart is empty" />}
+        <div className="flex flex-col gap-4">
         {cart.data.length > 0 &&
           cart.data.map((item) => <CartItem key={item._id} item={item} />)}
+        </div>
       </div>
       {cart.data.length > 0 && <CartTotal totalPrice={cartTotal} />}
     </main>
