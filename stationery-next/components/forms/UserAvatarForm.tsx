@@ -72,6 +72,18 @@ const UserAvatarForm = ({ onClose }: { onClose: () => void }) => {
     }
   }
 
+  const deleteAvatar = async () => {
+    if (!session || !session.accessToken) {
+      toast.error("Token not found! Please login again.");
+    } else {
+      await updateAvatar({
+        avatar: null,
+        jwt: session.accessToken,
+      });
+      onClose();
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <DialogHeader className="mb-4">
@@ -106,9 +118,9 @@ const UserAvatarForm = ({ onClose }: { onClose: () => void }) => {
       </div>
       <DialogFooter className="mt-4">
         <DialogClose asChild>
-          <Button variant="outline">Cancel</Button>
+          <Button variant="outline" onClick={() => onClose()}>Cancel</Button>
         </DialogClose>
-        <Button type="button">Delete Avatar</Button>
+        <Button type="button" onClick={deleteAvatar}>Delete Avatar</Button>
         <Button type="submit">Save changes</Button>
       </DialogFooter>
     </form>

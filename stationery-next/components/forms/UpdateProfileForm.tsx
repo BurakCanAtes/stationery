@@ -68,8 +68,8 @@ const UpdateProfileForm = () => {
               onClick={() => setAvatarDialogOpen(true)}
             >
               <Avatar className="size-48">
-                <AvatarImage src={user?.avatar || ""} />
-                <AvatarFallback>
+                <AvatarImage src={user?.avatar || undefined} />
+                <AvatarFallback className="text-5xl font-semibold">
                   {user?.firstName.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
