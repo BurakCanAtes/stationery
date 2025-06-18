@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { Session } from "next-auth";
 
 import axiosInstance from "./axios";
-import { IAuthResponse } from "../types/responses/user.type";
+import { IAuthResponse, IGetUserResponse } from "../types/responses/user.type";
 import { ISignUpRequest } from "../types/requests/user.type";
 import { ICategoryResponse, IGetCategoriesResponse } from "../types/responses/category.type";
 import { IGetAllProductsResponse, ProductResponse } from "../types/responses/product.type";
@@ -164,4 +164,18 @@ export const updateCart = async (
       },
     }
   );
+};
+
+/**
+ * Fetches user data from the API.
+ * @param {Session} user - The session that contains the user data.
+ *
+ * @returns {Promise<IGetUserResponse>} - The response containing the user data.
+ */
+export const getUser = async (user: Session): Promise<IGetUserResponse> => {
+  return await fetchData<IGetUserResponse>("/users/me", {
+    headers: {
+      Authorization: `Bearer ${user.accessToken}`
+    }
+  });
 };

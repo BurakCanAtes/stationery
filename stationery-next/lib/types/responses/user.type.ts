@@ -24,3 +24,7 @@ export interface IAuthResponse {
   user?: User;
   error?: string;
 }
+
+export interface IGetUserResponse {
+  data: User;
+}

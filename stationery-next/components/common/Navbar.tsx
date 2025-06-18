@@ -133,7 +133,7 @@ const AuthMenu = ({ session }: { session: Session | null }) => {
             >
               <MenuItem>
                 <Link
-                  href="/user/profile"
+                  href="/profile"
                   className={
                     "block px-4 py-2 text-sm text-popover-foreground data-focus:outline-hidden"
                   }
