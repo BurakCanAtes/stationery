@@ -1,3 +1,4 @@
+import EmptyResult from "@/components/common/EmptyResult";
 import Paging from "@/components/common/Paging";
 import SortDropdown from "@/components/common/SortDropdown";
 import ProductFilterForm from "@/components/forms/ProductFilterForm";
@@ -26,14 +27,22 @@ export default async function Products(props: { searchParams: SearchParams }) {
         <SortDropdown />
       </header>
       <ProductFilterForm categories={categories.data} />
+      {products.data.length === 0 && <EmptyResult text="No products found" />}
       <main className="mt-4 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4">
-        {products.data.map((product) => (
-          <ProductCard key={product._id} product={product} />
-        ))}
+        {products.data.length > 0 &&
+          products.data.map((product) => (
+            <ProductCard key={product._id} product={product} />
+          ))}
       </main>
-      <div className="mt-6 mb-2">
-        <Paging page={page} totalPages={totalPages} searchParams={searchParams} />
-      </div>
+      {products.data.length > 0 && (
+        <div className="mt-6 mb-2">
+          <Paging
+            page={page}
+            totalPages={totalPages}
+            searchParams={searchParams}
+          />
+        </div>
+      )}
     </div>
   );
 }

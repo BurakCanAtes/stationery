@@ -71,7 +71,7 @@ const QuantityButtons = ({
   };
 
   return (
-    <div className="flex gap-1 lg:h-full lg:justify-center lg:items-center">
+    <div className="flex gap-1 select-none lg:h-full lg:justify-center lg:items-center">
       <SquareMinus
         color="#737373"
         onClick={() => handleQuantityChange(localQuantity - 1)}
