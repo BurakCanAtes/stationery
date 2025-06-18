@@ -18,6 +18,6 @@
 - **Authentication:** NextAuth.js, JWT
 
 ## Authors
-- John Doe - [GitHub](https://github.com/johndoe)
-- Jane Smith - [GitHub](https://github.com/janesmith)
-- Alex Johnson - [GitHub](https://github.com/alexjohnson)
+- Ahmet Talha Ercan - 42169 - [GitHub](https://github.com/ATErcan)
+- Ahmet Emin Yazgan - 40316 - [GitHub](https://github.com/AhmetYazgan)
+- Burak Can Ates - 41286 - [GitHub](https://github.com/BurakCanAtes)
