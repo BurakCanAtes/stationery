@@ -92,9 +92,12 @@ const updateCartItems = async (cart, newItem, query, userId) => {
 
   const response = paginateCartItems(query, populatedCart);
 
+  const totalItemsInCart = populatedCart.items.reduce((acc, item) => acc + item.quantity, 0);
+
   return {
     updatedItem,
     ...response,
+    totalItemsInCart
   };
 };
 

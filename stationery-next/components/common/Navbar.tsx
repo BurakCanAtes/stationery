@@ -9,7 +9,7 @@ import {
   MenuItem,
   MenuItems,
 } from "@headlessui/react";
-import { Bars3Icon, ShoppingCartIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { Session } from "next-auth";
 import { useSession } from "next-auth/react";
@@ -212,7 +212,6 @@ export default function Navbar() {
             <div className="flex items-center max-w-40 sm:w-1/2 sm:max-w-none sm:mx-auto">
               <SearchInput />
             </div>
-            <NavListDesktop navigation={navigation} />
           </div>
 
           {status !== "loading" && <AuthMenu session={session} />}

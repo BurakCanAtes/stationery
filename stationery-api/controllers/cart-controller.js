@@ -21,7 +21,9 @@ const getUserCart = async (req, res, next) => {
 
     const response = paginateCartItems(req.query, cart);
 
-    res.status(200).json(response);
+    const totalItemsInCart = cart.items.reduce((acc, item) => acc + item.quantity, 0);
+
+    res.status(200).json({...response, totalItemsInCart});
   } catch (error) {
     return next(error);
   }
