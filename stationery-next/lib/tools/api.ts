@@ -11,6 +11,7 @@ import { ProductQueryParams } from "../types/product.type";
 import { buildParams } from "../utils/helperFunctions";
 import { ICartResponse, IUpdateCartResponse } from "../types/responses/cart.type";
 import { IUpdateCartRequest } from "../types/requests/cart.type";
+import { IUploadAvatarResponse } from "../types/responses/upload.type";
 
 /**
  * Fetches data from a given URL using axios and handles any errors.
@@ -210,6 +211,21 @@ export const updateProfile = async (
   return await patchData<IGetUserResponse>(`/users/me`, body, {
     headers: {
       Authorization: `Bearer ${jwt}`,
+    },
+  });
+};
+
+export const uploadAvatar = async (
+  avatar: FileList,
+  jwt: string
+): Promise<IUploadAvatarResponse> => {
+  const formData = new FormData();
+  formData.append("image", avatar[0]);
+
+  return postData<IUploadAvatarResponse>("/upload?folder=avatars", formData, {
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+      "Content-Type": "multipart/form-data",
     },
   });
 };
