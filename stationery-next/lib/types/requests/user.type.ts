@@ -4,3 +4,8 @@ export interface ISignUpRequest {
   email: string;
   password: string;
 }
+
+export interface IUpdateUserRequest {
+  firstName: string;
+  lastName: string;
+}

@@ -57,3 +57,18 @@ export const ProductFilterFormValidation = z
     message: "Max price must be higher than min price",
     path: ["maxPrice"],
   });
+
+export const UpdateProfileValidation = z.object({
+  firstName: z
+    .string()
+    .trim()
+    .min(1, "First name is required")
+    .min(2, "First name must be at least 2 characters")
+    .max(30, "First name must be at most 30 characters"),
+  lastName: z
+    .string()
+    .trim()
+    .min(1, "Last name is required")
+    .min(2, "Last name must be at least 2 characters")
+    .max(30, "Last name must be at most 30 characters"),
+});

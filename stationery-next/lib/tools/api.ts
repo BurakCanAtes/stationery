@@ -3,7 +3,7 @@ import { Session } from "next-auth";
 
 import axiosInstance from "./axios";
 import { IAuthResponse, IGetUserResponse } from "../types/responses/user.type";
-import { ISignUpRequest } from "../types/requests/user.type";
+import { ISignUpRequest, IUpdateUserRequest } from "../types/requests/user.type";
 import { ICategoryResponse, IGetCategoriesResponse } from "../types/responses/category.type";
 import { IGetAllProductsResponse, ProductResponse } from "../types/responses/product.type";
 import { DESCENDING_SORT, PAGE_SIZE } from "../constants/productsParams";
@@ -58,6 +58,28 @@ export const postData = async <T>(
     return response.data;
   } catch (error) {
     console.error("Error posting data:", error);
+    if (axios.isAxiosError(error)) {
+      throw error;
+    } else {
+      throw new Error("Unknown error while request");
+    }
+  }
+};
+
+export const patchData = async <T>(
+  url: string,
+  options: Record<string, any>,
+  config?: AxiosRequestConfig
+): Promise<T> => {
+  try {
+    const response: AxiosResponse<T> = await axiosInstance.patch(
+      url,
+      options,
+      config
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating data:", error);
     if (axios.isAxiosError(error)) {
       throw error;
     } else {
@@ -177,5 +199,17 @@ export const getUser = async (user: Session): Promise<IGetUserResponse> => {
     headers: {
       Authorization: `Bearer ${user.accessToken}`
     }
+  });
+};
+
+export const updateProfile = async (
+  user: IUpdateUserRequest,
+  jwt: string
+): Promise<IGetUserResponse> => {
+  const body = { ...user };
+  return await patchData<IGetUserResponse>(`/users/me`, body, {
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
   });
 };
