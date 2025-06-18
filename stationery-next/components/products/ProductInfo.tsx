@@ -1,6 +1,7 @@
 import { ProductTypes } from "@/lib/types/product.type";
 import { ProductResponse } from "@/lib/types/responses/product.type";
 import { formatAmount } from "@/lib/utils/helperFunctions";
+import AddToCart from "../common/AddToCart";
 
 const ProductSubInfo = ({ product }: { product: ProductResponse }) => {
   if(product.productType === ProductTypes.STATIONERY) {
@@ -70,6 +71,7 @@ const ProductInfo = ({ product }: { product: ProductResponse }) => {
           </span>
         </h4>
       </div>
+      <AddToCart _id={product._id} stock={product.stock} />
     </div>
   );
 }

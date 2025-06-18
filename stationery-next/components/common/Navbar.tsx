@@ -25,6 +25,7 @@ import { capitalizeFirstLetter } from "@/lib/utils/helperFunctions";
 import { CategoryNav, INavConfig } from "@/lib/types/navbar.type";
 import LogoutBtn from "./buttons/LogoutBtn";
 import { useCategories } from "@/lib/tools/queries";
+import CartIcon from "./CartIcon";
 
 const NavListDesktop = ({ navigation }: { navigation: INavConfig[] }) => {
   return (
@@ -115,13 +116,7 @@ const AuthMenu = ({ session }: { session: Session | null }) => {
     <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
       {user ? (
         <>
-          <Link
-            href={"/cart"}
-            className="relative rounded-full bg-background p-1 text-muted-foreground hover:text-foreground focus:outline-none focus:ring-offset-2 focus:ring-offset-background"
-          >
-            <span className="sr-only">View cart</span>
-            <ShoppingCartIcon aria-hidden="true" className="size-6" />
-          </Link>
+          <CartIcon />
 
           {/* Profile dropdown */}
           <Menu as="div" className="relative ml-3">
