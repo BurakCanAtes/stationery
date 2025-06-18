@@ -69,12 +69,15 @@ export const useUploadAvatar = (
     mutationFn: (payload: { avatar: FileList; jwt: string }) =>
       uploadAvatar(payload.avatar, payload.jwt),
 
-    onSuccess: async (uploadResponse) => {
+    onSuccess: async (uploadResponse, variables) => {
       const avatarUrl = uploadResponse.secure_url;
+
+      const user = await updateAvatar(avatarUrl, variables.jwt);
 
       await update({
         user: {
           avatar: avatarUrl,
+          ...user.data,
         },
       });
 

@@ -64,7 +64,7 @@ const UpdateProfileForm = () => {
             className="w-full space-y-3 md:space-y-4"
           >
             <div
-              className="cursor-pointer hover:opacity-90"
+              className="w-max mx-auto cursor-pointer hover:opacity-90"
               onClick={() => setAvatarDialogOpen(true)}
             >
               <Avatar className="size-48">
