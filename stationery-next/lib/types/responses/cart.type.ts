@@ -11,3 +11,7 @@ export interface ICartResponse {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface IUpdateCartResponse extends ICartResponse {
+  updatedItem: ProductInCart;
+}

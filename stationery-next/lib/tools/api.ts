@@ -9,7 +9,8 @@ import { IGetAllProductsResponse } from "../types/responses/product.type";
 import { DESCENDING_SORT, PAGE_SIZE } from "../constants/productsParams";
 import { ProductQueryParams } from "../types/product.type";
 import { buildParams } from "../utils/helperFunctions";
-import { ICartResponse } from "../types/responses/cart.type";
+import { ICartResponse, IUpdateCartResponse } from "../types/responses/cart.type";
+import { IUpdateCartRequest } from "../types/requests/cart.type";
 
 /**
  * Fetches data from a given URL using axios and handles any errors.
@@ -128,4 +129,29 @@ export const getUserCart = async (user: Session): Promise<ICartResponse> => {
       Authorization: `Bearer ${user.accessToken}`
     }
   });
+};
+
+/**
+ * Updates the user cart
+ *
+ * @param {IUpdateCartRequest} product - The product id that will be updated.
+ * @param {Session} user - The session that contains the user data.
+ * 
+ * @returns {Promise<IUpdateCartResponse>} - The updated cart data.
+ */
+export const updateCart = async (
+  product: IUpdateCartRequest,
+  user: Session
+): Promise<IUpdateCartResponse> => {
+  return postData<IUpdateCartResponse>(
+    "/cart",
+    {
+      ...product,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${user.accessToken}`,
+      },
+    }
+  );
 };

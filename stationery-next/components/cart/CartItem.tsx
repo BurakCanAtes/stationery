@@ -1,11 +1,14 @@
 import Image from "next/image";
-import { SquareMinus, SquarePlus } from "lucide-react";
 
 import { ProductInCart } from "@/lib/types/cart.type";
 import { formatAmount } from "@/lib/utils/helperFunctions";
+import QuantityButtons from "../common/buttons/QuantityButtons";
 
 const CartItem = ({ item }: { item: ProductInCart }) => {
-  const { quantity, product: { images, name, productType, price } } = item;
+  const {
+    quantity,
+    product: { _id, images, name, productType, price, stock },
+  } = item;
   const thumbnail = images[0] || "/images/galleryIcon.svg";
 
   return (
@@ -43,11 +46,7 @@ const CartItem = ({ item }: { item: ProductInCart }) => {
         <p className="font-semibold text-sm md:text-base lg:h-full lg:flex lg:justify-center lg:items-center">
           ${formatAmount(price)}
         </p>
-        <div className="flex gap-1 lg:h-full lg:justify-center lg:items-center">
-          <SquareMinus color="#737373" />
-          <p className="text-neutral-700 font-semibold">{quantity}</p>
-          <SquarePlus color="#737373" />
-        </div>
+        <QuantityButtons _id={_id} quantity={quantity} stock={stock} />
         <p className="font-semibold text-red-400 text-sm md:text-base lg:h-full lg:flex lg:justify-center lg:items-center">
           ${formatAmount(price * quantity)}
         </p>
