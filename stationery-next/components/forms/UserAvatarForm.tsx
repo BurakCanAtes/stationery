@@ -16,11 +16,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AvatarFormValidation } from "@/lib/validation";
-import { useUploadAvatar } from "@/lib/tools/mutations";
+import { useUpdateAvatar, useUploadAvatar } from "@/lib/tools/mutations";
 
 const UserAvatarForm = ({ onClose }: { onClose: () => void }) => {
   const { data: session, update } = useSession();
+
+  // update by upload file
   const { mutateAsync: uploadAvatar } = useUploadAvatar(update);
+  // update by image url
+  const { mutateAsync: updateAvatar } = useUpdateAvatar(update);
 
   const {
     register,
@@ -54,6 +58,13 @@ const UserAvatarForm = ({ onClose }: { onClose: () => void }) => {
       if (data.file) {
         await uploadAvatar({
           avatar: data.file,
+          jwt: session.accessToken,
+        });
+        onClose();
+      }
+      if (data.avatarUrl) {
+        await updateAvatar({
+          avatar: data.avatarUrl,
           jwt: session.accessToken,
         });
         onClose();

@@ -229,3 +229,15 @@ export const uploadAvatar = async (
     },
   });
 };
+
+export const updateAvatar = async (
+  avatar: string | null,
+  jwt: string
+): Promise<IGetUserResponse> => {
+  const body = { avatar };
+  return await patchData<IGetUserResponse>(`/users/me`, body, {
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
+  });
+};

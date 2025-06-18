@@ -4,7 +4,7 @@ import { AxiosError } from "axios";
 import toast from "react-hot-toast";
 
 import { IUpdateCartRequest } from "../types/requests/cart.type";
-import { updateCart, updateProfile, uploadAvatar } from "./api";
+import { updateAvatar, updateCart, updateProfile, uploadAvatar } from "./api";
 import { IUpdateUserRequest } from "../types/requests/user.type";
 
 export const useUpdateCart = () => {
@@ -75,6 +75,38 @@ export const useUploadAvatar = (
       await update({
         user: {
           avatar: avatarUrl,
+        },
+      });
+
+      toast.success("Avatar updated successfully.");
+    },
+
+    onError: (error) => {
+      let errorMessage = "Something went wrong.";
+
+      if (error instanceof AxiosError && error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      toast.error(errorMessage);
+    },
+  });
+};
+
+export const useUpdateAvatar = (
+  update: (data?: Partial<Session>) => Promise<Session | null>
+) => {
+  return useMutation({
+    mutationFn: (payload: { avatar: string | null; jwt: string }) =>
+      updateAvatar(payload.avatar, payload.jwt),
+
+    onSuccess: async (updatedUser, variables) => {
+      await update({
+        user: {
+          avatar: variables.avatar,
+          ...updatedUser.data,
         },
       });
 
