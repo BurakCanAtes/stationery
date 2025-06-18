@@ -1,6 +1,8 @@
 import { z } from "zod";
 import zxcvbn from "zxcvbn";
 
+import { ACCEPTED_TYPES, MAX_FILE_SIZE } from "./constants/avatarConfig";
+
 export const LogInFormValidation = z.object({
   email: z
     .string()
@@ -57,3 +59,56 @@ export const ProductFilterFormValidation = z
     message: "Max price must be higher than min price",
     path: ["maxPrice"],
   });
+
+export const UpdateProfileValidation = z.object({
+  firstName: z
+    .string()
+    .trim()
+    .min(1, "First name is required")
+    .min(2, "First name must be at least 2 characters")
+    .max(30, "First name must be at most 30 characters"),
+  lastName: z
+    .string()
+    .trim()
+    .min(1, "Last name is required")
+    .min(2, "Last name must be at least 2 characters")
+    .max(30, "Last name must be at most 30 characters"),
+});
+
+const sizeInMB = (sizeInBytes: number, decimalsNum = 2) => {
+  const result = sizeInBytes / (1024 * 1024);
+  return +result.toFixed(decimalsNum);
+};
+
+export const AvatarFormValidation = z
+  .object({
+    file: z
+      .custom<FileList>()
+      .optional()
+      .refine((files) => {
+        return Array.from(files ?? []).every(
+          (file) => sizeInMB(file.size) <= MAX_FILE_SIZE
+        );
+      }, `File size should be less than ${MAX_FILE_SIZE}MB`)
+      .refine((files) => {
+        return Array.from(files ?? []).every((file) =>
+          ACCEPTED_TYPES.includes(file.type)
+        );
+      }, "Only these types are allowed: .jpeg, .png, .webp"),
+    avatarUrl: z
+      .string()
+      .url("Must be a valid URL")
+      .optional()
+      .or(z.literal("")),
+  })
+  .refine(
+    (data) => {
+      const hasFile = data.file instanceof FileList;
+      const hasUrl = !!data.avatarUrl && data.avatarUrl.trim() !== "";
+      return (hasFile && !hasUrl) || (!hasFile && hasUrl);
+    },
+    {
+      message: "Please provide either a file or a URL, not both.",
+      path: ["avatarUrl"],
+    }
+  );

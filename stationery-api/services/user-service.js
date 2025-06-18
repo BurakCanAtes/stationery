@@ -25,7 +25,7 @@ const updateUserById = async (userId, updates) => {
 
   if (
     isHostedInMyCloudinary(user.avatar) &&
-    !isHostedInMyCloudinary(updatedUser)
+    !isHostedInMyCloudinary(updatedUser.avatar)
   ) {
     const avatarPublicId = extractPublicId(user.avatar);
     if (avatarPublicId) {

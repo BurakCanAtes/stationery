@@ -55,7 +55,7 @@ export const authOptions: AuthOptions = {
     maxAge: 30 * 60,
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.firstName = user.firstName;
@@ -68,6 +68,13 @@ export const authOptions: AuthOptions = {
         token.accessToken = user.accessToken;
         token.accessTokenExpires = Date.now() + 30 * 60 * 1000;
       }
+
+      if (trigger === "update") {
+        token.firstName = session.user.firstName || "";
+        token.lastName = session.user.lastName || "";
+        token.avatar = session.user?.avatar || null;
+      }
+      
       if (Date.now() < (token.accessTokenExpires as number)) {
         return token;
       }

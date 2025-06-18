@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Disclosure,
   DisclosureButton,
@@ -9,15 +11,15 @@ import {
 } from "@headlessui/react";
 import { Bars3Icon, ShoppingCartIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import { getServerSession, Session } from "next-auth";
+import { Session } from "next-auth";
+import { useSession } from "next-auth/react";
 import { ChevronDown } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { getCategories } from "@/lib/tools/api";
 import { capitalizeFirstLetter } from "@/lib/utils/helperFunctions";
-import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { CategoryNav, INavConfig } from "@/lib/types/navbar.type";
 import LogoutBtn from "./buttons/LogoutBtn";
+import { useCategories } from "@/lib/tools/queries";
 import SearchInput from "./SearchInput";
 import CartIcon from "./CartIcon";
 
@@ -37,7 +39,9 @@ const NavListDesktop = ({ navigation }: { navigation: INavConfig[] }) => {
                   <MenuItem key={subItem.name}>
                     <Link
                       href={subItem.href}
-                      className={"block px-4 py-2 text-sm text-popover-foreground"}
+                      className={
+                        "block px-4 py-2 text-sm text-popover-foreground"
+                      }
                     >
                       {subItem.name}
                     </Link>
@@ -49,7 +53,9 @@ const NavListDesktop = ({ navigation }: { navigation: INavConfig[] }) => {
             <Link
               key={item.name}
               href={item.href || "/products"}
-              className={"text-muted-foreground hover:bg-muted hover:text-foreground rounded-md px-3 py-2 text-sm font-medium"}
+              className={
+                "text-muted-foreground hover:bg-muted hover:text-foreground rounded-md px-3 py-2 text-sm font-medium"
+              }
             >
               {item.name}
             </Link>
@@ -58,7 +64,7 @@ const NavListDesktop = ({ navigation }: { navigation: INavConfig[] }) => {
       </div>
     </div>
   );
-}
+};
 
 const NavListMobile = ({ navigation }: { navigation: INavConfig[] }) => {
   return (
@@ -113,8 +119,10 @@ const AuthMenu = ({ session }: { session: Session | null }) => {
             <div>
               <MenuButton className="relative flex rounded-full text-sm bg-background focus:outline-none focus:ring-offset-2 focus:ring-offset-background">
                 <Avatar>
-                <AvatarImage src={user.avatar} />
-                <AvatarFallback>{user.firstName.charAt(0).toUpperCase()}</AvatarFallback>
+                  <AvatarImage src={user.avatar} />
+                  <AvatarFallback>
+                    {user.firstName.charAt(0).toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
               </MenuButton>
             </div>
@@ -124,7 +132,7 @@ const AuthMenu = ({ session }: { session: Session | null }) => {
             >
               <MenuItem>
                 <Link
-                  href="/user/profile"
+                  href="/profile"
                   className={
                     "block px-4 py-2 text-sm text-popover-foreground data-focus:outline-hidden"
                   }
@@ -158,13 +166,13 @@ const AuthMenu = ({ session }: { session: Session | null }) => {
       )}
     </div>
   );
-}
+};
 
-export default async function Navbar() {
-  const session = await getServerSession(authOptions);
-  const categories = await getCategories();
+export default function Navbar() {
+  const { data: session, status } = useSession();
+  const { data: categories, isLoading } = useCategories();
 
-  const categoryNav: CategoryNav[] = categories.data.map((category) => ({
+  const categoryNav: CategoryNav[] | undefined = categories?.data.map((category) => ({
     name: capitalizeFirstLetter(category.name),
     href: `/products?category=${category._id}`,
   }));
@@ -173,6 +181,12 @@ export default async function Navbar() {
     { name: "Products", href: "/products" },
     { name: "Categories", dropdown: true, items: categoryNav },
   ];
+
+  if (isLoading) {
+    return (
+      <nav className="w-full h-16 bg-neutral-200 shadow-sm animate-pulse"></nav>
+    );
+  }
 
   return (
     <Disclosure as="nav" className="bg-background text-foreground shadow-sm">
@@ -201,7 +215,7 @@ export default async function Navbar() {
             <NavListDesktop navigation={navigation} />
           </div>
 
-          <AuthMenu session={session} />
+          {status !== "loading" && <AuthMenu session={session} />}
         </div>
       </div>
 

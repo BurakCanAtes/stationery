@@ -1,7 +1,7 @@
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import { Session } from "next-auth";
 
-import { getUserCart } from "./api";
+import { getCategories, getUserCart } from "./api";
 
 /**
  * Custom hook to fetch user cart
@@ -23,3 +23,10 @@ export async function prefetchCart(queryClient: QueryClient, session: Session) {
     queryFn: () => getUserCart(session),
   });
 }
+
+export const useCategories = () => {
+  return useQuery({
+    queryKey: ["cartegories"],
+    queryFn: () => getCategories(),
+  });
+};

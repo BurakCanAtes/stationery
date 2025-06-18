@@ -2,8 +2,8 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { Session } from "next-auth";
 
 import axiosInstance from "./axios";
-import { IAuthResponse } from "../types/responses/user.type";
-import { ISignUpRequest } from "../types/requests/user.type";
+import { IAuthResponse, IGetUserResponse } from "../types/responses/user.type";
+import { ISignUpRequest, IUpdateUserRequest } from "../types/requests/user.type";
 import { ICategoryResponse, IGetCategoriesResponse } from "../types/responses/category.type";
 import { IGetAllProductsResponse, ProductResponse } from "../types/responses/product.type";
 import { DESCENDING_SORT, PAGE_SIZE } from "../constants/productsParams";
@@ -11,6 +11,7 @@ import { ProductQueryParams } from "../types/product.type";
 import { buildParams } from "../utils/helperFunctions";
 import { ICartResponse, IUpdateCartResponse } from "../types/responses/cart.type";
 import { IUpdateCartRequest } from "../types/requests/cart.type";
+import { IUploadAvatarResponse } from "../types/responses/upload.type";
 
 /**
  * Fetches data from a given URL using axios and handles any errors.
@@ -58,6 +59,28 @@ export const postData = async <T>(
     return response.data;
   } catch (error) {
     console.error("Error posting data:", error);
+    if (axios.isAxiosError(error)) {
+      throw error;
+    } else {
+      throw new Error("Unknown error while request");
+    }
+  }
+};
+
+export const patchData = async <T>(
+  url: string,
+  options: Record<string, any>,
+  config?: AxiosRequestConfig
+): Promise<T> => {
+  try {
+    const response: AxiosResponse<T> = await axiosInstance.patch(
+      url,
+      options,
+      config
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating data:", error);
     if (axios.isAxiosError(error)) {
       throw error;
     } else {
@@ -164,4 +187,57 @@ export const updateCart = async (
       },
     }
   );
+};
+
+/**
+ * Fetches user data from the API.
+ * @param {Session} user - The session that contains the user data.
+ *
+ * @returns {Promise<IGetUserResponse>} - The response containing the user data.
+ */
+export const getUser = async (user: Session): Promise<IGetUserResponse> => {
+  return await fetchData<IGetUserResponse>("/users/me", {
+    headers: {
+      Authorization: `Bearer ${user.accessToken}`
+    }
+  });
+};
+
+export const updateProfile = async (
+  user: IUpdateUserRequest,
+  jwt: string
+): Promise<IGetUserResponse> => {
+  const body = { ...user };
+  return await patchData<IGetUserResponse>(`/users/me`, body, {
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
+  });
+};
+
+export const uploadAvatar = async (
+  avatar: FileList,
+  jwt: string
+): Promise<IUploadAvatarResponse> => {
+  const formData = new FormData();
+  formData.append("image", avatar[0]);
+
+  return postData<IUploadAvatarResponse>("/upload?folder=avatars", formData, {
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+export const updateAvatar = async (
+  avatar: string | null,
+  jwt: string
+): Promise<IGetUserResponse> => {
+  const body = { avatar };
+  return await patchData<IGetUserResponse>(`/users/me`, body, {
+    headers: {
+      Authorization: `Bearer ${jwt}`,
+    },
+  });
 };
