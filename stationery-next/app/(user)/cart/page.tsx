@@ -23,7 +23,7 @@ export default async function Cart() {
           <span className="font-semibold">{cart.totalItemsInCart} items</span> in your cart
         </p>
       </header>
-      <ShoppingCart />
+      <ShoppingCart cart={cart} />
     </div>
   );
 }
