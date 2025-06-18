@@ -66,8 +66,16 @@ export const authOptions: AuthOptions = {
         token.wishlist = user.wishlist;
         token.addresses = user.addresses;
         token.accessToken = user.accessToken;
+        token.accessTokenExpires = Date.now() + 30 * 60 * 1000;
       }
-      return token;
+      if (Date.now() < (token.accessTokenExpires as number)) {
+        return token;
+      }
+
+      return {
+        ...token,
+        error: "AccessTokenExpired",
+      };
     },
     async session({ session, token }) {
       session.user.id = token.id;

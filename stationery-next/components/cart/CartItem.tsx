@@ -1,47 +1,68 @@
 import Image from "next/image";
-import { SquareMinus, SquarePlus } from "lucide-react";
+import Link from "next/link";
 
-const CartItem = () => {
+import { ProductInCart } from "@/lib/types/cart.type";
+import { formatAmount } from "@/lib/utils/helperFunctions";
+import QuantityButtons from "../common/buttons/QuantityButtons";
+import { ProductTypes } from "@/lib/types/product.type";
+
+const CartItem = ({ item }: { item: ProductInCart }) => {
+  const { quantity, product } = item;
+
+  const { _id, images, name, productType, price, stock } = product;
+
+  const thumbnail = images[0] || "/images/galleryIcon.svg";
+
+  const productInfo =
+    productType === ProductTypes.STATIONERY
+      ? { info1: product.color, info2: product.brand }
+      : productType === ProductTypes.BOOK
+      ? { info1: product.author, info2: product.publisher }
+      : productType === ProductTypes.TOY
+      ? { info1: product.ageRange, info2: product.brand }
+      : undefined;
+
   return (
     <div className="grid grid-cols-3 lg:grid-cols-6">
       <div className="flex gap-2 col-span-2 md:gap-3 lg:col-span-3">
-        <div className="relative w-1/3 aspect-[3/4] lg:w-1/4">
+        <Link
+          href={`/products/${_id}`}
+          className="relative w-1/3 aspect-[3/4] lg:w-1/4"
+        >
           <Image
-            src="https://image.ceneostatic.pl/data/products/127812236/p-rubik-s-speed-cube-3x3.jpg"
-            alt="Product Name"
+            src={thumbnail}
+            alt={name}
             fill
             priority
             className="object-contain"
           />
-        </div>
+        </Link>
         <div className="h-full w-full flex flex-1 shrink-0 flex-col justify-evenly gap-2 lg:gap-0">
           <div className="flex flex-col">
-            <p className="text-xs text-neutral-500 font-semibold">STATIONERY</p>
+            <p className="text-xs text-neutral-500 font-semibold">
+              {productType.toUpperCase()}
+            </p>
             <h3 className="text-base sm:text-lg md:text-xl font-semibold">
-              Product Title
+              {name}
             </h3>
           </div>
           <div className="flex flex-col gap-1">
             <p className="text-xs md:text-sm text-neutral-700 font-semibold">
-              Author or Color or Age
+              {productInfo?.info1 || ""}
             </p>
             <p className="text-xs md:text-sm text-neutral-700 font-semibold">
-              Publisher or Brand
+              {productInfo?.info2 || ""}
             </p>
           </div>
         </div>
       </div>
       <div className="flex flex-col items-end justify-evenly sm:justify-center sm:gap-4 lg:col-span-3 lg:grid lg:grid-cols-3">
         <p className="font-semibold text-sm md:text-base lg:h-full lg:flex lg:justify-center lg:items-center">
-          $39,99
+          ${formatAmount(price)}
         </p>
-        <div className="flex gap-1 lg:h-full lg:justify-center lg:items-center">
-          <SquareMinus color="#737373" />
-          <p className="text-neutral-700 font-semibold">999</p>
-          <SquarePlus color="#737373" />
-        </div>
+        <QuantityButtons _id={_id} quantity={quantity} stock={stock} />
         <p className="font-semibold text-red-400 text-sm md:text-base lg:h-full lg:flex lg:justify-center lg:items-center">
-          $799999,989
+          ${formatAmount(price * quantity)}
         </p>
       </div>
     </div>

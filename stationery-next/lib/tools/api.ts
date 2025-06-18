@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
+import { Session } from "next-auth";
 
 import axiosInstance from "./axios";
 import { IAuthResponse } from "../types/responses/user.type";
@@ -8,6 +9,8 @@ import { IGetAllProductsResponse, ProductResponse } from "../types/responses/pro
 import { DESCENDING_SORT, PAGE_SIZE } from "../constants/productsParams";
 import { ProductQueryParams } from "../types/product.type";
 import { buildParams } from "../utils/helperFunctions";
+import { ICartResponse, IUpdateCartResponse } from "../types/responses/cart.type";
+import { IUpdateCartRequest } from "../types/requests/cart.type";
 
 /**
  * Fetches data from a given URL using axios and handles any errors.
@@ -122,4 +125,43 @@ export const getProducts = async (
  */
 export const getProductById = async (id: string): Promise<ProductResponse> => {
   return await fetchData<ProductResponse>(`/products/${id}`);
+};
+
+/**
+ * Fetches user cart from the API.
+ * @param {Session} user - The session that contains the user data.
+ *
+ * @returns {Promise<ICartResponse>} - The response containing the cart data.
+ */
+export const getUserCart = async (user: Session): Promise<ICartResponse> => {
+  return await fetchData<ICartResponse>("/cart", {
+    headers: {
+      Authorization: `Bearer ${user.accessToken}`
+    }
+  });
+};
+
+/**
+ * Updates the user cart
+ *
+ * @param {IUpdateCartRequest} product - The product id that will be updated.
+ * @param {Session} user - The session that contains the user data.
+ * 
+ * @returns {Promise<IUpdateCartResponse>} - The updated cart data.
+ */
+export const updateCart = async (
+  product: IUpdateCartRequest,
+  user: Session
+): Promise<IUpdateCartResponse> => {
+  return postData<IUpdateCartResponse>(
+    "/cart",
+    {
+      ...product,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${user.accessToken}`,
+      },
+    }
+  );
 };
